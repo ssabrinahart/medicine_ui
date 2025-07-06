@@ -1,0 +1,136 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+#primary-navigation {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;            
+  justify-content: center;    
+  gap: 20px;                 
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-weight: normal;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: #555;
+}
+
+.nav-link.active {
+  background-color: #00bcd4;
+  color: white;
+  font-weight: bold;
+}
+
+.login-button {
+  text-decoration: none;
+  font-weight: normal;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  color: white;
+}
+
+.login-button:hover {
+  background-color: #555;
+}
+
+.logout-button {
+  all: unset;
+  cursor: pointer;
+  color: white;
+
+}
+
+.logout-button:hover {
+  background-color: #555;
+}
+
+.auth-container {
+  max-width: 400px;
+  margin: 40px auto;
+  background: #f9f9f9;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.auth-form input,
+.auth-form button {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-form input {
+
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.auth-form button {
+  padding: 10px;
+  margin: auto;
+  background-color: #00bcd4;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+
+.auth-form button:hover {
+  background-color: #0097a7;
+}
+
+.auth-form p {
+  text-align: center;
+}
+
+
+
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
