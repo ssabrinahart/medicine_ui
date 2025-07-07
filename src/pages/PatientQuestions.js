@@ -96,7 +96,7 @@ function PatientQuestions() {
     
             {step === 4 && (
               <>
-                <textarea name="comments" placeholder="Additional Comments" value={formData.comments} onChange={handleChange}></textarea>
+                <textarea id = "additional-comments" name="comments" placeholder="Additional Comments" value={formData.comments} onChange={handleChange}></textarea>
                 <button onClick={handleSubmit}>Book</button>
               </>
             )}

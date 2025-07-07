@@ -21,6 +21,7 @@ function Header() {
     <header style={styles.header}>
       <h1>MediJane Consultation Services</h1>
       <ul id="primary-navigation">
+        <li><NavLink to="/home" className="nav-link">Home</NavLink></li>
         <li><NavLink to="/history" className="nav-link">History</NavLink></li>
         <li><NavLink to="/scheduling" className="nav-link">Scheduling</NavLink></li>
         <li><NavLink to="/profile" className="nav-link">Profile</NavLink></li>

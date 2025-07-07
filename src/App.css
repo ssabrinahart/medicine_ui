@@ -155,6 +155,10 @@ button:hover {
   background-color: #0097a7;
 }
 
+#additional-comments {
+  height: 400px;
+  width: 600px;
+}
 
 
 @keyframes App-logo-spin {
