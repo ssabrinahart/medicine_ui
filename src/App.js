@@ -1,0 +1,33 @@
+import React from 'react';
+import './App.css';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Scheduling from './pages/Scheduling';
+import Profile from './pages/Profile';
+import Login from './pages/Login';
+import PatientQuestions from './pages/PatientQuestions';
+import Register from './pages/Register';
+
+
+function App() {
+  return (
+    <Router>
+      <Header />
+      <main style={{ padding: '20px', paddingBottom: '60px' }}>
+        <Routes>
+          <Route path="/home" element={<Home />} />
+          <Route path="/history" element={<PatientQuestions/>} />
+          <Route path="/scheduling" element={<Scheduling />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </main>
+      <Footer />
+    </Router>
+  );
+}
+
+export default App;
