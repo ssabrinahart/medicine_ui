@@ -31,9 +31,9 @@ function Login({ onLoginSuccess }) {
 
       if (response.ok) {
         setAlertMessage("Login successful! Redirecting to profile...");
-        localStorage.setItem('authToken', data.token);
-        
-        // Call the parent component's success handler to update auth state
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("username", username);
+
         if (onLoginSuccess) {
           onLoginSuccess();
         }

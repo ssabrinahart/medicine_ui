@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import Modal from "../components/Modal";
 
 function PatientQuestions() {
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -25,8 +28,43 @@ function PatientQuestions() {
   };
 
   const nextStep = () => setStep((prev) => prev + 1);
-  const handleSubmit = () => {
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    const authToken = localStorage.getItem("authToken");
+    const username = localStorage.getItem("username");
+
+    if (!username) {
+      alert("You must be logged in to submit the form.");
+      return;
+    }
+
+    const fullData = { ...formData, username };
+    console.log("username is " + username);
+
+    try {
+      const response = await fetch("http://localhost:5001/medical-history", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(fullData),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+
+        setAlertMessage("Successfully submitted patient history!");
+        setTimeout(() => {
+          setAlertMessage("");
+        }, 1500);
+      } else {
+        const err = await response.json();
+        alert(err.message || "Submission failed.");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Network error. Please try again.");
+    }
   };
 
   const calculateAge = (dob) => {
@@ -184,6 +222,7 @@ function PatientQuestions() {
           </>
         )}
       </form>
+      <Modal message={alertMessage} onClose={() => setAlertMessage("")} />
     </div>
   );
 }
