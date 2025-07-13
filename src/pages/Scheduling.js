@@ -17,11 +17,16 @@ function Scheduling() {
 
   const handleSubmit = () => {
     if (selectedSlot) {
-
-      alert(`You booked: ${selectedSlot.day} at ${selectedSlot.time}
-Location: Zoom
-Provider: Hiba M.`);
-
+      const appointment = {
+        day: selectedSlot.day,
+        time: selectedSlot.time,
+        location: 'Zoom',
+        provider: 'Hiba M.',
+      };
+  
+      localStorage.setItem('appointment', JSON.stringify(appointment));
+  
+      alert(`You booked: ${selectedSlot.day} at ${selectedSlot.time}\nLocation: Zoom\nProvider: Hiba M.`);
     } else {
       alert('Please select a time slot.');
     }

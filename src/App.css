@@ -51,7 +51,7 @@
 }
 
 .nav-link.active {
-  background-color: #00bcd4;
+  background-color: #41AB5D;
   color: white;
   font-weight: bold;
 }
@@ -103,7 +103,7 @@
 
 .auth-form button {
   margin: auto;
-  background-color: #00bcd4;
+  background-color: #41AB5D;
   border: none;
   color: white;
   cursor: pointer;
@@ -112,7 +112,7 @@
 
 
 .auth-form button:hover {
-  background-color: #0097a7;
+  background-color: #41AB5D;
 }
 
 .auth-form p {
@@ -144,7 +144,7 @@ input, textarea, select {
 button {
   padding: 10px;
   font-size: 1rem;
-  background-color: #00bcd4;
+  background-color: #41AB5D;
   color: white;
   border: none;
   border-radius: 5px;
@@ -152,7 +152,7 @@ button {
 }
 
 button:hover {
-  background-color: #0097a7;
+  background-color: #74C476;
 }
 
 #additional-comments {
