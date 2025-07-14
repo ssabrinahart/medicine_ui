@@ -64,4 +64,24 @@
   .setting-btn.delete:hover {
     background-color: #d32f2f;
   }
-  
+  .password-form {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.password-form input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.password-form button {
+  padding: 8px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}

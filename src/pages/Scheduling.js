@@ -16,21 +16,33 @@ function Scheduling() {
   };
 
   const handleSubmit = () => {
-    if (selectedSlot) {
-      const appointment = {
-        day: selectedSlot.day,
-        time: selectedSlot.time,
-        location: 'Zoom',
-        provider: 'Hiba M.',
-      };
-  
-      localStorage.setItem('appointment', JSON.stringify(appointment));
-  
+  if (selectedSlot) {
+    const appointment = {
+      day: selectedSlot.day,
+      time: selectedSlot.time,
+      location: 'Zoom',
+      provider: 'Hiba M.',
+      username: localStorage.getItem('username'),
+    };
+    fetch('http://localhost:5001/book-appointment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(appointment)
+    })
+    .then(response => response.json())
+    .then(data => {
       alert(`You booked: ${selectedSlot.day} at ${selectedSlot.time}\nLocation: Zoom\nProvider: Hiba M.`);
-    } else {
-      alert('Please select a time slot.');
-    }
-  };
+    })
+    .catch(error => {
+      alert('Booking failed. Please try again.');
+      console.error(error);
+    });
+  } else {
+    alert('Please select a time slot.');
+  }
+};
 
   return (
     <div className="scheduling-container">

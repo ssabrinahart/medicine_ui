@@ -1,15 +1,53 @@
-import React, { useEffect, useState } from 'react';
-import './Home.css';
+import React, { useEffect, useState } from "react";
+import "./Home.css";
 
 function Home() {
   const [appointment, setAppointment] = useState(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem('appointment');
-    if (saved) {
-      setAppointment(JSON.parse(saved));
+    const username = localStorage.getItem("username");
+    const token = localStorage.getItem("token");
+
+    if (username) {
+      fetch(`http://localhost:5001/appointment/${username}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+        .then(({ ok, data }) => {
+          if (ok && data.appointment) {
+            setAppointment(data.appointment);
+          } else {
+            console.warn(data.message || "No appointment found");
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching appointment:", err);
+        });
     }
   }, []);
+
+  const handleCancelAppointment = () => {
+    const token = localStorage.getItem("token");
+    const username = localStorage.getItem("username");
+
+    fetch("http://localhost:5001/cancel-appointment", {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: { username },
+    })
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        alert(data.message);
+        if (ok) setAppointment(null);
+      })
+      .catch((err) => {
+        console.error("Error canceling appointment:", err);
+      });
+  };
 
   return (
     <div className="home-container">
@@ -17,23 +55,31 @@ function Home() {
         <h2>UPCOMING</h2>
         {appointment ? (
           <div className="appointment-card">
-            <p><strong>Day:</strong> {appointment.day}</p>
-            <p><strong>Time:</strong> {appointment.time}</p>
-            <p><strong>Location:</strong> {appointment.location}</p>
-            <p><strong>Provider:</strong> {appointment.provider}</p>
+            <p>
+              <strong>Day:</strong> {appointment.day}
+            </p>
+            <p>
+              <strong>Time:</strong> {appointment.time}
+            </p>
+            <p>
+              <strong>Location:</strong> {appointment.location}
+            </p>
+            <p>
+              <strong>Provider:</strong> {appointment.provider}
+            </p>
 
             <div className="action-buttons">
               <button
                 className="edit-btn"
-                onClick={() => window.location.href = "/scheduling"}
+                onClick={() => (window.location.href = "/scheduling")}
               >
                 Edit
               </button>
               <button
                 className="cancel-btn"
                 onClick={() => {
-                  localStorage.removeItem('appointment');
-                  setAppointment(null);
+                  handleCancelAppointment();
+                  // setAppointment(null);
                 }}
               >
                 Cancel
