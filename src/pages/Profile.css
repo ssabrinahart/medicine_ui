@@ -1,0 +1,87 @@
+.profile-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: Arial, sans-serif;
+    background: #fdfdfd;
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.08);
+  }
+  
+  h2 {
+    text-align: center;
+    color: #00bcd4;
+    margin-bottom: 2rem;
+  }
+  
+  .profile-section {
+    margin-bottom: 2rem;
+    padding: 1rem 1.5rem;
+    border-left: 4px solid #00bcd4;
+    background-color: #f8fafa;
+    border-radius: 8px;
+  }
+  
+  .profile-section h3 {
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  .profile-section ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .profile-section li {
+    margin: 0.4rem 0;
+    font-size: 0.95rem;
+  }
+  
+  .profile-section li strong {
+    color: #333;
+  }
+  
+  .setting-btn {
+    display: block;
+    margin: 0.5rem 0;
+    padding: 0.6rem 1.2rem;
+    background-color: #00bcd4;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .setting-btn:hover {
+    background-color: #0097a7;
+  }
+  
+  .setting-btn.delete {
+    background-color: #e57373;
+  }
+  
+  .setting-btn.delete:hover {
+    background-color: #d32f2f;
+  }
+  .password-form {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.password-form input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.password-form button {
+  padding: 8px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}

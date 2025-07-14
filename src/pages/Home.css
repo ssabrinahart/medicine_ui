@@ -26,7 +26,7 @@
   .appointment-card {
     background-color: #e0f7fa;
     padding: 1rem;
-    border-left: 4px solid #00bcd4;
+    border-left: 4px solid #41AB5D;
     border-radius: 6px;
     margin-bottom: 1.5rem;
     text-align: center;
@@ -84,7 +84,7 @@
   }
   
   .footer-links a {
-    color: #00bcd4;
+    color: #41AB5D;
     text-decoration: none;
     margin: 0 0.5rem;
   }
