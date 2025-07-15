@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import Modal from "../components/Modal";
 
@@ -9,6 +10,7 @@ function Profile() {
   const [newPassword, setNewPassword] = useState("");
   const [statusMsg, setStatusMsg] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const username = localStorage.getItem("username");
@@ -151,6 +153,14 @@ function Profile() {
           </ul>
         ) : (
           <p>No medical history submitted.</p>
+        )}
+        {medicalData && (
+          <button
+            className="button"
+            onClick={() => navigate("/history", { state: { editMode: true } })}
+            >
+            Edit Medical History
+          </button>
         )}
       </section>
 
