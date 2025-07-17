@@ -4,21 +4,20 @@ import { NavLink, useNavigate } from "react-router-dom";
 function Header() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [role, setRole] = useState(""); 
 
-  // Check login status on component mount
   useEffect(() => {
     const checkAuthStatus = () => {
       const loggedInStatus = localStorage.getItem("isLoggedIn") === "true";
       const authToken = localStorage.getItem("authToken");
+      const storedRole = localStorage.getItem("role");
 
-      // User is logged in if either flag exists
       const isAuthenticated = loggedInStatus || authToken;
       setIsLoggedIn(isAuthenticated);
+      setRole(storedRole || "");
     };
 
     checkAuthStatus();
-
-    // Listen for storage changes (useful for logout in other tabs)
     window.addEventListener("storage", checkAuthStatus);
 
     return () => {
@@ -26,26 +25,23 @@ function Header() {
     };
   }, []);
 
-  // Re-check auth status when location changes
   useEffect(() => {
     const loggedInStatus = localStorage.getItem("isLoggedIn") === "true";
     const authToken = localStorage.getItem("authToken");
+    const storedRole = localStorage.getItem("role");
+
     const isAuthenticated = loggedInStatus || authToken;
     setIsLoggedIn(isAuthenticated);
+    setRole(storedRole || "");
   }, [window.location.pathname]);
 
   const handleLogout = () => {
-    // Remove both authentication tokens
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("authToken");
-
-    // Update local state
+    localStorage.removeItem("role"); 
     setIsLoggedIn(false);
-
-    // Navigate to login page
+    setRole("");
     navigate("/login");
-
-    // Force a page refresh to ensure all components re-render with new auth state
     window.location.reload();
   };
 
@@ -55,26 +51,53 @@ function Header() {
       <ul id="primary-navigation">
         {isLoggedIn ? (
           <>
-            <li>
-              <NavLink to="/home" className="nav-link">
-                Home
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/history" className="nav-link">
-                History
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/scheduling" className="nav-link">
-                Scheduling
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/profile" className="nav-link">
-                Profile
-              </NavLink>
-            </li>
+            {role === "admin" ? (
+              <>
+                <li>
+                  <NavLink to="/admin-dashboard" className="nav-link">
+                    Dashboard
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/admin-history" className="nav-link">
+                    Medical Histories
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/scheduling" className="nav-link">
+                    Manage Patients
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/profile" className="nav-link">
+                    Profile
+                  </NavLink>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <NavLink to="/home" className="nav-link">
+                    Home
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/history" className="nav-link">
+                    History
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/scheduling" className="nav-link">
+                    Scheduling
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/profile" className="nav-link">
+                    Profile
+                  </NavLink>
+                </li>
+              </>
+            )}
             <li>
               <button onClick={handleLogout} className="nav-link logout-button">
                 Logout

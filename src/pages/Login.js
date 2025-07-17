@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Modal from "../components/Modal";
+import {jwtDecode} from "jwt-decode";
 
 function Login({ onLoginSuccess }) {
   const [username, setUsername] = useState("");
@@ -14,35 +15,47 @@ function Login({ onLoginSuccess }) {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
+  
     try {
       const response = await fetch("http://localhost:5001/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          username: username,
-          password: password,
-        }),
+        body: JSON.stringify({ username, password }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
-        setAlertMessage("Login successful! Redirecting to profile...");
-        localStorage.setItem("authToken", data.token);
-        localStorage.setItem("username", username);
+        const token = data.token;
+        const decoded = jwtDecode(token);
+        const role = decoded.sub.role; 
 
-        if (onLoginSuccess) {
-          onLoginSuccess();
-        }
+      
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("username", username);
+        localStorage.setItem("role", decoded.sub.role);
+      
+        setAlertMessage("Login successful! Redirecting...");
+      
+        onLoginSuccess(); // Call this immediately
+        console.log("Decoded JWT:", decoded);
 
         setTimeout(() => {
-          setAlertMessage(""); // Close alert
-          navigate("/profile");
+          setAlertMessage("");
+          if (role === "admin") {
+            console.log("Navigating to admin dashboard...");
+
+            navigate("/admin-dashboard");
+          } else {
+            console.log("Navigating to profile dashboard...");
+
+            navigate("/profile");
+          }
         }, 1500);
-      } else {
+      }
+      else {
         setError(data.message || "Login failed");
       }
     } catch (error) {
