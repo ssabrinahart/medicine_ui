@@ -30,12 +30,12 @@ function Login({ onLoginSuccess }) {
       if (response.ok) {
         const token = data.token;
         const decoded = jwtDecode(token);
-        const role = decoded.sub.role; 
+        const role = decoded.role; 
 
       
         localStorage.setItem("authToken", token);
         localStorage.setItem("username", username);
-        localStorage.setItem("role", decoded.sub.role);
+        localStorage.setItem("role", decoded.role);
       
         setAlertMessage("Login successful! Redirecting...");
       
