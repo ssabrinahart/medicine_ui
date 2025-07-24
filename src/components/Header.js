@@ -47,7 +47,7 @@ function Header() {
 
   return (
     <header style={styles.header}>
-      <h1>MediJane Consultation Services</h1>
+      <h1>LeafRX Consultation Services</h1>
       <ul id="primary-navigation">
         {isLoggedIn ? (
           <>
@@ -59,7 +59,7 @@ function Header() {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/admin-history" className="nav-link">
+                  <NavLink to="/admin--" className="nav-link">
                     Medical Histories
                   </NavLink>
                 </li>

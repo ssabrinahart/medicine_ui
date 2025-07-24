@@ -17,6 +17,7 @@ import PatientQuestions from "./pages/PatientQuestions";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminHistory from "./pages/AdminHistory";
+import Success from "./pages/Success";
 
 
 function App() {
@@ -89,6 +90,8 @@ function App() {
               isAuthenticated ? <Navigate to="/home" replace /> : <Register />
             }
           />
+          <Route path="/success" element={<Success />} />
+
           {/* Protected routes */}
 
           <Route
@@ -142,6 +145,7 @@ function App() {
                 <Scheduling />
               </ProtectedRoute>
             }
+
           />
           <Route
             path="/profile"
@@ -151,7 +155,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/admin-dashboard"
             element={
