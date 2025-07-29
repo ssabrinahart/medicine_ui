@@ -6,7 +6,7 @@ const timeSlots = [
   '1:00-2:00', '2:00-3:00'
 ];
 
-const days = ['Monday', 'Tuesday', 'Wednesday'];
+const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 function Scheduling() {
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -21,7 +21,7 @@ function Scheduling() {
       day: selectedSlot.day,
       time: selectedSlot.time,
       location: 'Zoom',
-      provider: 'Hiba M.',
+      provider: 'Dr. Smith',
       username: localStorage.getItem('username'),
     };
     fetch('http://localhost:5001/book-appointment', {
