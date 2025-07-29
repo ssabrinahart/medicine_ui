@@ -35,9 +35,10 @@ function Home() {
     fetch("http://localhost:5001/cancel-appointment", {
       method: "DELETE",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: { username },
+      body: JSON.stringify({ username }), 
     })
       .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
       .then(({ ok, data }) => {

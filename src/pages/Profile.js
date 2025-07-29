@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import Modal from "../components/Modal";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +11,7 @@ function Profile() {
   const [newPassword, setNewPassword] = useState("");
   const [statusMsg, setStatusMsg] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
+  const navigate = useNavigate();
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState({});
@@ -343,6 +345,14 @@ function Profile() {
           </>
         ) : (
           <p>No medical history submitted.</p>
+        )}
+        {medicalData && (
+          <button
+            className="button"
+            onClick={() => navigate("/history", { state: { editMode: true } })}
+            >
+            Edit Medical History
+          </button>
         )}
       </section>
 

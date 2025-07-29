@@ -3,6 +3,7 @@ import "./App.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -14,47 +15,52 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import PatientQuestions from "./pages/PatientQuestions";
 import Register from "./pages/Register";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminHistory from "./pages/AdminHistory";
+import Success from "./pages/Success";
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState("");
 
-  // Check authentication status on app load
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setRole("");
+  };
+
   useEffect(() => {
     const checkAuthStatus = () => {
-      // Check both the header's flag and the auth token
       const loggedInStatus = localStorage.getItem("isLoggedIn") === "true";
       const authToken = localStorage.getItem("authToken");
+      const storedRole = localStorage.getItem("role");
 
       if (loggedInStatus || authToken) {
         setIsAuthenticated(true);
-        // Sync the two localStorage values
+        setRole(storedRole);
         if (authToken && !loggedInStatus) {
           localStorage.setItem("isLoggedIn", "true");
         }
       } else {
         setIsAuthenticated(false);
+        setRole("");
       }
+
       setLoading(false);
     };
 
     checkAuthStatus();
 
-    // Listen for storage changes to handle logout from header
     window.addEventListener("storage", checkAuthStatus);
-
-    // Custom event listener for logout
-    const handleLogout = () => {
-      setIsAuthenticated(false);
-    };
-
-    window.addEventListener("logout", handleLogout);
+    window.addEventListener("logout", handleLogout); // ✅ use here
 
     return () => {
       window.removeEventListener("storage", checkAuthStatus);
-      window.removeEventListener("logout", handleLogout);
+      window.removeEventListener("logout", handleLogout); // ✅ and here
     };
   }, []);
+
 
   // Function to handle login success
   const handleLoginSuccess = () => {
@@ -79,29 +85,49 @@ function App() {
         <Routes>
           {/* Public routes */}
           <Route
-            path="/login"
-            element={
-              isAuthenticated ? (
-                <Navigate to="/home" replace />
-              ) : (
-                <Login onLoginSuccess={handleLoginSuccess} />
-              )
-            }
-          />
-          <Route
             path="/register"
             element={
               isAuthenticated ? <Navigate to="/home" replace /> : <Register />
             }
           />
+          <Route path="/success" element={<Success />} />
 
           {/* Protected routes */}
+
           <Route
             path="/home"
             element={
               <ProtectedRoute>
                 <Home />
               </ProtectedRoute>
+            }
+          />
+                    <Route
+            path="/admin-history"
+            element={
+              <ProtectedRoute>
+                <AdminHistory />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/admin/patient/:patientId" 
+          element={<ProtectedRoute>
+            < AdminHistory />
+            </ProtectedRoute>
+          } />
+
+          <Route
+            path="/login"
+            element={
+              isAuthenticated ? (
+                <Navigate to={
+                  localStorage.getItem("role") === "admin"
+                    ? "/admin-dashboard"
+                    : "/home"
+                } replace />
+              ) : (
+                <Login onLoginSuccess={handleLoginSuccess} />
+              )
             }
           />
           <Route
@@ -119,12 +145,21 @@ function App() {
                 <Scheduling />
               </ProtectedRoute>
             }
+
           />
           <Route
             path="/profile"
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-dashboard"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
               </ProtectedRoute>
             }
           />
