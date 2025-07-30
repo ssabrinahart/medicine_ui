@@ -28,6 +28,21 @@ function PatientQuestions() {
     comments: "",
   });
 
+  const [feet, setFeet] = useState("");
+  const [inches, setInches] = useState("");
+
+  const getMaxDOB = () => {
+    const today = new Date();
+    today.setFullYear(today.getFullYear() - 21);
+    return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+  };
+  
+  const handleBack = () => {
+    setAlertMessage(""); 
+    setStep((prev) => prev - 1);
+  };
+  
+
   useEffect(() => {
     const checkMedicalHistory = async () => {
       const username = localStorage.getItem("username");
@@ -78,12 +93,26 @@ function PatientQuestions() {
     checkMedicalHistory();
   }, []);
   
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+  
+    // Prevent numbers or special characters in names
+    if ((name === "firstName" || name === "lastName") && /[^a-zA-Z\s]/.test(value)) {
+      return; // Stop updating if invalid character is typed
+    }
+  
+    // Prevent letters in weight
+    if (name === "weight" && /[^0-9]/.test(value)) {
+      return;
+    }
+  
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  
 
   const nextStep = () => setStep((prev) => prev + 1);
+  
   const handleSubmit = async () => {
     const authToken = localStorage.getItem("authToken");
     const username = localStorage.getItem("username");
@@ -185,12 +214,35 @@ function PatientQuestions() {
   };
   
   const handleNext = () => {
+    if (step === 2) {
+      if (!feet || inches === "") {
+        setAlertMessage("Please select both feet and inches for height.");
+        return;
+      }
+  
+      const combinedHeight = `${feet} ft ${inches} in`;
+  
+      if (formData.weight.trim() && combinedHeight) {
+        setFormData((prev) => ({
+          ...prev,
+          height: combinedHeight,
+        }));
+        nextStep();
+      } else {
+        setAlertMessage("Please fill in all required fields before continuing.");
+      }
+  
+      return; 
+    }
+  
     if (validateStep()) {
+      setAlertMessage(""); 
       nextStep();
     } else {
       setAlertMessage("Please fill in all required fields before continuing.");
     }
   };
+  
   
   return (
     <div className="form-container">
@@ -199,13 +251,16 @@ function PatientQuestions() {
       <form onSubmit={(e) => e.preventDefault()}>
         {step === 1 && (
           <>
+            <div>First Name <span className="required-asterisk">*</span></div>
             <input
               name="firstName"
               placeholder="First Name"
               value={formData.firstName}
               onChange={handleChange}
               required
+              pattern="^[A-Za-z\s]+$"
             />
+            <div>Last Name <span className="required-asterisk">*</span></div>
             <input
               name="lastName"
               placeholder="Last Name"
@@ -213,13 +268,16 @@ function PatientQuestions() {
               onChange={handleChange}
               required
             />
+            <div>Date of Birth (Must be 21+)<span className="required-asterisk">* </span></div>
             <input
               name="dob"
               type="date"
               value={formData.dob}
               onChange={handleChange}
               required
+              max={getMaxDOB()}
             />
+            <div>Gender <span className="required-asterisk">*</span></div>
             <select
               name="gender"
               placeholder="Gender"
@@ -237,6 +295,7 @@ function PatientQuestions() {
 
         {step === 2 && (
           <>
+            <div>Weight <span className="required-asterisk">*</span></div>
             <input
               name="weight"
               placeholder="Weight (lbs)"
@@ -244,44 +303,70 @@ function PatientQuestions() {
               onChange={handleChange}
               required
             />
-              <input
-                name="height"
-                placeholder="Height"
-                value={formData.height}
-                onChange={handleChange}
+            <div>Height <span className="required-asterisk">*</span></div>
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <select
+                name="feet"
+                value={feet}
+                onChange={(e) => setFeet(e.target.value)}
                 required
-                style={{ width: "60px", marginRight: "8px" }}
-              />
+              >
+                <option value="">Feet</option>
+                {[...Array(8).keys()].slice(1).map((f) => (
+                  <option key={f} value={f}>{f} ft</option>
+                ))}
+              </select>
+
+              <select
+                name="inches"
+                value={inches}
+                onChange={(e) => setInches(e.target.value)}
+                required
+              >
+                <option value="">Inches</option>
+                {[...Array(12).keys()].map((i) => (
+                  <option key={i} value={i}>{i} in</option>
+                ))}
+              </select>
+            </div>
+            <div>Allergies </div>
             <input
               name="allergies"
               placeholder="Allergies"
               value={formData.allergies}
               onChange={handleChange}
             />
+            <div>Medications </div>
             <textarea
               name="medications"
               placeholder="Medications"
               value={formData.medications}
               onChange={handleChange}
             ></textarea>
-            <button type="button" onClick={handleNext}>Next</button>
+            <div className="backNextButtons">
+              <button type="button" className="half-button" onClick={handleBack}>Back</button>
+              <button type="button" className="half-button" onClick={handleNext}>Next</button>
+            </div>
           </>
         )}
 
         {step === 3 && (
           <>
+            <div> Conditions </div>
             <textarea
               name="conditions"
               placeholder="Conditions"
               value={formData.conditions}
               onChange={handleChange}
             ></textarea>
+            <div>Injuries </div>
             <textarea
               name="injuries"
               placeholder="Injuries"
               value={formData.injuries}
               onChange={handleChange}
             ></textarea>
+            <div>Cannabis Use <span className="required-asterisk">*</span></div>
             <select
               name="cannabisUse"
               value={formData.cannabisUse}
@@ -298,7 +383,10 @@ function PatientQuestions() {
               value={formData.reason}
               onChange={handleChange}
             ></textarea>
-            <button type="button" onClick={handleNext}>Next</button>
+            <div className="backNextButtons">
+              <button type="button" className="half-button" onClick={handleBack}>Back</button>
+              <button type="button" className="half-button" onClick={handleNext}>Next</button>
+            </div>
           </>
         )}
 
@@ -311,7 +399,10 @@ function PatientQuestions() {
               value={formData.comments}
               onChange={handleChange}
             ></textarea>
-            <button type="button" onClick={handleNext}>Next</button>
+            <div className="backNextButtons">
+              <button type="button" className="half-button" onClick={handleBack}>Back</button>
+              <button type="button" className="half-button" onClick={handleNext}>Next</button>
+            </div>
           </>
         )}
 
@@ -331,8 +422,10 @@ function PatientQuestions() {
             <p><strong>Reason for Visit:</strong> {formData.reason || "None"}</p>
             <p><strong>Additional Comments:</strong> {formData.comments || "None"}</p>
 
-            <button type="button" onClick={() => setStep(4)}>Back</button>
-            <button type="button" onClick={handleSubmit}>Book</button>
+            <div className="backNextButtons">
+              <button type="button" className="half-button" onClick={handleBack}>Back</button>
+              <button type="button" className="half-button" onClick={handleSubmit}>Book</button>
+            </div>
           </div>
         )}
       </form>

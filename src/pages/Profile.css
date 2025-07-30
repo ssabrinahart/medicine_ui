@@ -107,3 +107,21 @@
   cursor: pointer;
 }
 
+.required-asterisk {
+  color: red;
+  margin-left: 4px;
+}
+
+.backNextButtons {
+  display: flex;
+  gap: 10px;
+}
+.half-button {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
