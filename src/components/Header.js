@@ -47,6 +47,7 @@ function Header() {
 
   return (
     <header style={styles.header}>
+      <img src="/logo.jpg" alt="LeafRX Logo" className="header-logo" />
       <h1>LeafRX Consultation Services</h1>
       <ul id="primary-navigation">
         {isLoggedIn ? (
