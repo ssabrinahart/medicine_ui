@@ -208,18 +208,26 @@ function PatientQuestions() {
     return true;
   };
   
-    const handleNext = () => {
+  const handleNext = () => {
     if (step === 2) {
       if (!feet || inches === "") {
         setAlertMessage("Please select both feet and inches for height.");
         return;
       }
   
-      // Save formatted height to formData before advancing
-      setFormData((prev) => ({
-        ...prev,
-        height: `${feet} ft ${inches} in`,
-      }));
+      const combinedHeight = `${feet} ft ${inches} in`;
+  
+      if (formData.weight.trim() && combinedHeight) {
+        setFormData((prev) => ({
+          ...prev,
+          height: combinedHeight,
+        }));
+        nextStep();
+      } else {
+        setAlertMessage("Please fill in all required fields before continuing.");
+      }
+  
+      return; 
     }
   
     if (validateStep()) {
@@ -228,6 +236,7 @@ function PatientQuestions() {
       setAlertMessage("Please fill in all required fields before continuing.");
     }
   };
+  
   
   return (
     <div className="form-container">
