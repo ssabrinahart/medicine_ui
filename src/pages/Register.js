@@ -11,11 +11,26 @@ function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const validatePassword = (password) => {
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecial = /[!@#$%^&*()_+{}\[\]:;"'|\\<>,.?/~`-]/.test(password);
+    const isLongEnough = password.length >= 8;
+  
+    return hasLowercase && hasUppercase && hasNumber && hasSpecial && isLongEnough;
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+
+    if (!validatePassword(password)) {
+      setError("Password Invalid");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:5001/register", {
@@ -61,12 +76,12 @@ function Register() {
         />
         <div className="regText"> Phone Number </div>
         <PhoneInput
-  defaultCountry="US"
-  placeholder="Enter phone number"
-  value={phonenumber}
-  onChange={setPhoneNumber}
-  required
-/>
+          defaultCountry="US"
+          placeholder="Enter phone number"
+          value={phonenumber}
+          onChange={setPhoneNumber}
+          required
+        />
         <div className="regText"> Email </div>
         <input
           type="email"
@@ -76,15 +91,18 @@ function Register() {
           required
         />
         <div className="regText"> Password </div>
+        <div className="passText">
+          Password must be at least 8 characters and include an uppercase letter, 
+          lowercase letter, number, and special character.
+        </div>
         <input
           type="password"
-          placeholder="Password (min 6 chars)"
+          placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          minLength={6}
+          minLength={8}
         />
-
         {error && (
           <p className="error-message" style={{ color: "red" }}>
             {error}

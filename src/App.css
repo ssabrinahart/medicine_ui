@@ -187,7 +187,17 @@ button:hover {
 .regText {
   display: flex;
   justify-content: left;
+  font-weight: bold;
 }
+
+.passText {
+  display: flex;
+  justify-content: left;
+  color: red;
+  font-size: 10px;
+  text-align: left;
+}
+
 header {
   background-color: #212121;
   color: #fff;
