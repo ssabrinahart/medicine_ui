@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -49,6 +51,7 @@ function Register() {
     <div className="auth-container">
       <h2>Register</h2>
       <form onSubmit={handleSubmit} className="auth-form">
+        <div className="regText"> Username </div>
         <input
           type="text"
           placeholder="Username"
@@ -56,15 +59,15 @@ function Register() {
           onChange={(e) => setUsername(e.target.value)}
           required
         />
-
-        <input
-          type="tel"
-          placeholder="Phone Number"
-          value={phonenumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          required
-        />
-
+        <div className="regText"> Phone Number </div>
+        <PhoneInput
+  defaultCountry="US"
+  placeholder="Enter phone number"
+  value={phonenumber}
+  onChange={setPhoneNumber}
+  required
+/>
+        <div className="regText"> Email </div>
         <input
           type="email"
           placeholder="Email"
@@ -72,7 +75,7 @@ function Register() {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-
+        <div className="regText"> Password </div>
         <input
           type="password"
           placeholder="Password (min 6 chars)"
