@@ -37,7 +37,11 @@ function PatientQuestions() {
     return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
   };
   
-  const handleBack = () => setStep((prev) => prev - 1);
+  const handleBack = () => {
+    setAlertMessage(""); 
+    setStep((prev) => prev - 1);
+  };
+  
 
   useEffect(() => {
     const checkMedicalHistory = async () => {
@@ -232,6 +236,7 @@ function PatientQuestions() {
     }
   
     if (validateStep()) {
+      setAlertMessage(""); 
       nextStep();
     } else {
       setAlertMessage("Please fill in all required fields before continuing.");
