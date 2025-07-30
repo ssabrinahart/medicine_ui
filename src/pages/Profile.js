@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import Modal from "../components/Modal";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 function Profile() {
   const [medicalData, setMedicalData] = useState(null);
@@ -404,18 +406,23 @@ function Profile() {
         </button>
         {showContactForm && (
           <div className="contact-form">
-            <input
-              type="email"
-              placeholder="New Email (Optional)"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="New Phone (Optional)"
-              value={newPhone}
-              onChange={(e) => setNewPhone(e.target.value)}
-            />
+            <div className="emailPhone">
+              <input
+                type="email"
+                placeholder="New Email (Optional)"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                className="emailPhoneInput"
+              />
+
+              <PhoneInput
+                placeholder="New Phone (Optional)"
+                defaultCountry="US"
+                value={newPhone}
+                onChange={setNewPhone}
+                className="emailPhoneInput"
+              />
+            </div>
             <button onClick={handleContactUpdate}>Submit</button>
           </div>
         )}{" "}
