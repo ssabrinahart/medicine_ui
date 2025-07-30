@@ -199,6 +199,7 @@ function PatientQuestions() {
       <form onSubmit={(e) => e.preventDefault()}>
         {step === 1 && (
           <>
+            <div>First Name <span className="required-asterisk">*</span></div>
             <input
               name="firstName"
               placeholder="First Name"
@@ -206,6 +207,7 @@ function PatientQuestions() {
               onChange={handleChange}
               required
             />
+            <div>Last Name <span className="required-asterisk">*</span></div>
             <input
               name="lastName"
               placeholder="Last Name"
@@ -213,6 +215,7 @@ function PatientQuestions() {
               onChange={handleChange}
               required
             />
+            <div>Date of Birth <span className="required-asterisk">*</span></div>
             <input
               name="dob"
               type="date"
@@ -220,6 +223,7 @@ function PatientQuestions() {
               onChange={handleChange}
               required
             />
+            <div>Gender <span className="required-asterisk">*</span></div>
             <select
               name="gender"
               placeholder="Gender"
@@ -237,6 +241,7 @@ function PatientQuestions() {
 
         {step === 2 && (
           <>
+            <div>Weight <span className="required-asterisk">*</span></div>
             <input
               name="weight"
               placeholder="Weight (lbs)"
@@ -244,6 +249,7 @@ function PatientQuestions() {
               onChange={handleChange}
               required
             />
+            <div>Height <span className="required-asterisk">*</span></div>
               <input
                 name="height"
                 placeholder="Height"
@@ -252,12 +258,14 @@ function PatientQuestions() {
                 required
                 style={{ width: "60px", marginRight: "8px" }}
               />
+            <div>Allergies </div>
             <input
               name="allergies"
               placeholder="Allergies"
               value={formData.allergies}
               onChange={handleChange}
             />
+            <div>Medications </div>
             <textarea
               name="medications"
               placeholder="Medications"
@@ -270,18 +278,21 @@ function PatientQuestions() {
 
         {step === 3 && (
           <>
+            <div> Conditions </div>
             <textarea
               name="conditions"
               placeholder="Conditions"
               value={formData.conditions}
               onChange={handleChange}
             ></textarea>
+            <div>Injuries </div>
             <textarea
               name="injuries"
               placeholder="Injuries"
               value={formData.injuries}
               onChange={handleChange}
             ></textarea>
+            <div>Cannabis Use <span className="required-asterisk">*</span></div>
             <select
               name="cannabisUse"
               value={formData.cannabisUse}

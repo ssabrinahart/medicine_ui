@@ -107,3 +107,7 @@
   cursor: pointer;
 }
 
+.required-asterisk {
+  color: red;
+  margin-left: 4px;
+}
