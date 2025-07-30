@@ -28,6 +28,16 @@ function PatientQuestions() {
     comments: "",
   });
 
+  const [feet, setFeet] = useState("");
+  const [inches, setInches] = useState("");
+
+  const getMaxDOB = () => {
+    const today = new Date();
+    today.setFullYear(today.getFullYear() - 21);
+    return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+  };
+  
+
   useEffect(() => {
     const checkMedicalHistory = async () => {
       const username = localStorage.getItem("username");
@@ -78,12 +88,26 @@ function PatientQuestions() {
     checkMedicalHistory();
   }, []);
   
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+  
+    // Prevent numbers or special characters in names
+    if ((name === "firstName" || name === "lastName") && /[^a-zA-Z\s]/.test(value)) {
+      return; // Stop updating if invalid character is typed
+    }
+  
+    // Prevent letters in weight
+    if (name === "weight" && /[^0-9]/.test(value)) {
+      return;
+    }
+  
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  
 
   const nextStep = () => setStep((prev) => prev + 1);
+  
   const handleSubmit = async () => {
     const authToken = localStorage.getItem("authToken");
     const username = localStorage.getItem("username");
@@ -184,7 +208,20 @@ function PatientQuestions() {
     return true;
   };
   
-  const handleNext = () => {
+    const handleNext = () => {
+    if (step === 2) {
+      if (!feet || inches === "") {
+        setAlertMessage("Please select both feet and inches for height.");
+        return;
+      }
+  
+      // Save formatted height to formData before advancing
+      setFormData((prev) => ({
+        ...prev,
+        height: `${feet} ft ${inches} in`,
+      }));
+    }
+  
     if (validateStep()) {
       nextStep();
     } else {
@@ -206,6 +243,7 @@ function PatientQuestions() {
               value={formData.firstName}
               onChange={handleChange}
               required
+              pattern="^[A-Za-z\s]+$"
             />
             <div>Last Name <span className="required-asterisk">*</span></div>
             <input
@@ -215,13 +253,14 @@ function PatientQuestions() {
               onChange={handleChange}
               required
             />
-            <div>Date of Birth <span className="required-asterisk">*</span></div>
+            <div>Date of Birth (Must be 21+)<span className="required-asterisk">* </span></div>
             <input
               name="dob"
               type="date"
               value={formData.dob}
               onChange={handleChange}
               required
+              max={getMaxDOB()}
             />
             <div>Gender <span className="required-asterisk">*</span></div>
             <select
@@ -250,14 +289,31 @@ function PatientQuestions() {
               required
             />
             <div>Height <span className="required-asterisk">*</span></div>
-              <input
-                name="height"
-                placeholder="Height"
-                value={formData.height}
-                onChange={handleChange}
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <select
+                name="feet"
+                value={feet}
+                onChange={(e) => setFeet(e.target.value)}
                 required
-                style={{ width: "60px", marginRight: "8px" }}
-              />
+              >
+                <option value="">Feet</option>
+                {[...Array(8).keys()].slice(1).map((f) => (
+                  <option key={f} value={f}>{f} ft</option>
+                ))}
+              </select>
+
+              <select
+                name="inches"
+                value={inches}
+                onChange={(e) => setInches(e.target.value)}
+                required
+              >
+                <option value="">Inches</option>
+                {[...Array(12).keys()].map((i) => (
+                  <option key={i} value={i}>{i} in</option>
+                ))}
+              </select>
+            </div>
             <div>Allergies </div>
             <input
               name="allergies"
