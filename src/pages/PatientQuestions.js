@@ -37,6 +37,7 @@ function PatientQuestions() {
     return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
   };
   
+  const handleBack = () => setStep((prev) => prev - 1);
 
   useEffect(() => {
     const checkMedicalHistory = async () => {
@@ -337,7 +338,10 @@ function PatientQuestions() {
               value={formData.medications}
               onChange={handleChange}
             ></textarea>
-            <button type="button" onClick={handleNext}>Next</button>
+            <div className="backNextButtons">
+              <button type="button" className="half-button" onClick={handleBack}>Back</button>
+              <button type="button" className="half-button" onClick={handleNext}>Next</button>
+            </div>
           </>
         )}
 
@@ -374,7 +378,10 @@ function PatientQuestions() {
               value={formData.reason}
               onChange={handleChange}
             ></textarea>
-            <button type="button" onClick={handleNext}>Next</button>
+            <div className="backNextButtons">
+              <button type="button" className="half-button" onClick={handleBack}>Back</button>
+              <button type="button" className="half-button" onClick={handleNext}>Next</button>
+            </div>
           </>
         )}
 
@@ -387,7 +394,10 @@ function PatientQuestions() {
               value={formData.comments}
               onChange={handleChange}
             ></textarea>
-            <button type="button" onClick={handleNext}>Next</button>
+            <div className="backNextButtons">
+              <button type="button" className="half-button" onClick={handleBack}>Back</button>
+              <button type="button" className="half-button" onClick={handleNext}>Next</button>
+            </div>
           </>
         )}
 
@@ -407,8 +417,10 @@ function PatientQuestions() {
             <p><strong>Reason for Visit:</strong> {formData.reason || "None"}</p>
             <p><strong>Additional Comments:</strong> {formData.comments || "None"}</p>
 
-            <button type="button" onClick={() => setStep(4)}>Back</button>
-            <button type="button" onClick={handleSubmit}>Book</button>
+            <div className="backNextButtons">
+              <button type="button" className="half-button" onClick={handleBack}>Back</button>
+              <button type="button" className="half-button" onClick={handleSubmit}>Book</button>
+            </div>
           </div>
         )}
       </form>
