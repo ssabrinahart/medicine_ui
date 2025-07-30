@@ -13,6 +13,29 @@
   }
 }
 
+.header-logo {
+  height: 5rem;       
+  width: auto;         
+  vertical-align: middle;
+  display: inline-block;
+  margin-right: 1em;
+  pointer-events: auto; 
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  background-color: #333;
+  color: white;
+}
+
+.header-branding {
+  display: flex;
+  align-items: center;
+}
+
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -25,7 +48,7 @@
 }
 
 .App-link {
-  color: #61dafb;
+  color: #78fb6194;
 }
 
 #primary-navigation {
@@ -34,7 +57,8 @@
   margin: 0;
   display: flex;            
   justify-content: center;    
-  gap: 20px;                 
+  gap: 20px;    
+  margin-left: auto;             
 }
 
 .nav-link {
@@ -164,6 +188,135 @@ button:hover {
   display: flex;
   justify-content: left;
 }
+header {
+  background-color: #212121;
+  color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: #41AB5D;
+}
+
+#primary-navigation {
+  list-style: none;
+  display: flex;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  margin-left: auto;
+}
+
+#primary-navigation li {
+  display: flex;
+  align-items: center;
+}
+
+.nav-link,
+.login-button,
+.logout-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease, border-bottom 0.2s ease;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-link:hover,
+.login-button:hover,
+.logout-button:hover {
+  color: #00d40e7d;
+  border-bottom: 2px solid #41AB5D;
+}
+
+.nav-link.active {
+  color: #fff;
+  border-bottom: 2px solid #41AB5D;
+}
+
+.logout-button {
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #primary-navigation {
+    flex-direction: column;
+    width: 100%;
+    margin-top: 1rem;
+    gap: 0.75rem;
+  }
+
+  #primary-navigation li {
+    width: 100%;
+  }
+
+  .nav-link,
+  .login-button,
+  .logout-button {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+.site-footer {
+  background-color: #f9f9f9;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  border-top: 1px solid #ddd;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.site-footer p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.site-footer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.site-footer li {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.site-footer li:hover {
+  color: #00bcd4;
+}
+
+@media (max-width: 600px) {
+  .site-footer ul {
+    gap: 1rem;
+    flex-direction: column;
+  }
+}
+
 
 @keyframes App-logo-spin {
   from {
