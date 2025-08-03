@@ -18,9 +18,10 @@ import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminHistory from "./pages/AdminHistory";
 import Success from "./pages/Success";
-
+import EditAppointment from "./pages/EditAppointment";
 
 function App() {
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState("");
@@ -91,6 +92,9 @@ function App() {
             }
           />
           <Route path="/success" element={<Success />} />
+
+          <Route path="/edit-appointment" element={<EditAppointment />} 
+          />
 
           {/* Protected routes */}
 
