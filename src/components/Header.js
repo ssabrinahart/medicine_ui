@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 function Header() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [role, setRole] = useState(""); 
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     const checkAuthStatus = () => {
@@ -38,7 +38,7 @@ function Header() {
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("authToken");
-    localStorage.removeItem("role"); 
+    localStorage.removeItem("role");
     setIsLoggedIn(false);
     setRole("");
     navigate("/login");
@@ -47,6 +47,7 @@ function Header() {
 
   return (
     <header style={styles.header}>
+      <img src="/logo.jpg" alt="LeafRX Logo" className="header-logo" />
       <h1>LeafRX Consultation Services</h1>
       <ul id="primary-navigation">
         {isLoggedIn ? (
@@ -58,11 +59,16 @@ function Header() {
                     Dashboard
                   </NavLink>
                 </li>
-                <li>
+                {/* <li>
+                  <NavLink to="/admin--" className="nav-link">
+                    Medical Histories
+                  </NavLink>
+                </li> */}
+                {/* <li>
                   <NavLink to="/scheduling" className="nav-link">
                     Manage Patients
                   </NavLink>
-                </li>
+                </li> */}
                 <li>
                   <NavLink to="/profile" className="nav-link">
                     Profile
