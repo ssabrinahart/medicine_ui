@@ -59,11 +59,6 @@ function Header() {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/admin--" className="nav-link">
-                    Medical Histories
-                  </NavLink>
-                </li>
-                <li>
                   <NavLink to="/scheduling" className="nav-link">
                     Manage Patients
                   </NavLink>
