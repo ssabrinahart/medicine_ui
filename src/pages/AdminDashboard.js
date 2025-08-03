@@ -20,6 +20,9 @@ function AdminDashboard() {
     startTime: "",
     duration: 30, // in minutes
   });
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
   const [successMessage, setSuccessMessage] = useState("");
 
   const navigate = useNavigate();
@@ -59,13 +62,23 @@ function AdminDashboard() {
         if (!apptResponse.ok) throw new Error("Failed to fetch appointments");
         const apptData = await apptResponse.json();
 
-        const events = apptData.appointments.map((appt) => ({
-          id: appt.id,
-          title: `Patient: ${appt.patient_id}`,
-          start: new Date(appt.start_date),
-          end: new Date(appt.end_date),
-          patient_id: appt.patient_id,
-        }));
+        console.log("time " + JSON.stringify(apptData.time));
+        const events = apptData.appointments
+          .filter(
+            (appt) =>
+              !appt.date.startsWith("gAAAAA") && !appt.time.startsWith("gAAAAA")
+          )
+          .map((appt) => ({
+            id: appt.id || `${appt.patient_id}-${appt.date}-${appt.time}`, // fallback if appt.id missing
+            title: `Booked`,
+            start: new Date(`${appt.date}T${appt.time}`),
+            end: new Date(
+              new Date(`${appt.date}T${appt.time}`).getTime() + 50 * 60000
+            ),
+            patient_id: appt.patient_id,
+          }));
+
+        console.log("appointments " + JSON.stringify(events));
         setAppointments(events);
 
         // Fetch user count
@@ -95,6 +108,9 @@ function AdminDashboard() {
     }
 
     try {
+      if (patientId === "system" || patientId === "admin") {
+        throw new Error("Can't view medical histories of these users");
+      }
       const response = await fetch(
         `http://localhost:5001/medical-history/${patientId}`,
         {
@@ -260,6 +276,90 @@ function AdminDashboard() {
         style={{ height: 500 }}
         onSelectEvent={handleSelectEvent}
       />
+      <div style={{ marginTop: "2rem" }}>
+        <h3>Upcoming Appointments List</h3>
+        {appointments.length === 0 ? (
+          <p>No appointments scheduled.</p>
+        ) : (
+          <div style={styles.appointmentsList}>
+            {appointments.map((appt) => (
+              <div key={appt.id} style={styles.appointmentCard}>
+                <div>
+                  <strong>Patient ID:</strong> {appt.patient_id}
+                </div>
+                <div>
+                  <strong>Time:</strong>{" "}
+                  {moment(appt.start).format("YYYY-MM-DD HH:mm")}
+                </div>
+                <button
+                  style={styles.viewHistoryButton}
+                  onClick={() => handleViewHistory(appt.patient_id)}
+                >
+                  View Medical History
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {showCancelModal && selectedEvent && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <h2>Cancel Appointment</h2>
+            <p>
+              Are you sure you want to cancel the appointment for{" "}
+              <strong>{selectedEvent.title}</strong> on{" "}
+              <strong>{selectedEvent.start.toLocaleString()}</strong>?
+            </p>
+            <div style={styles.modalButtons}>
+              <button
+                onClick={async () => {
+                  try {
+                    const token = localStorage.getItem("authToken");
+                    const response = await fetch(
+                      `http://localhost:5001/admin/cancel-appointment/${selectedEvent.id}`,
+                      {
+                        method: "DELETE",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                      }
+                    );
+
+                    if (!response.ok)
+                      throw new Error("Failed to cancel appointment");
+
+                    // Remove cancelled appointment from state without reloading everything
+                    setAppointments((prev) =>
+                      prev.filter((appt) => appt.id !== selectedEvent.id)
+                    );
+
+                    setShowCancelModal(false);
+                    setSelectedEvent(null);
+                  } catch (error) {
+                    console.error("Error cancelling appointment:", error);
+                    alert("Failed to cancel appointment.");
+                  }
+                }}
+                style={styles.cancelButton}
+              >
+                Confirm Cancel
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowCancelModal(false);
+                  setSelectedEvent(null);
+                }}
+                style={styles.submitButton}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <button style={styles.createAppointmentButton} onClick={openModal}>
         Create Appointment
@@ -448,6 +548,34 @@ const styles = {
     fontWeight: "bold",
     display: "block",
     width: "fit-content",
+  },
+  appointmentsList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+  },
+
+  appointmentCard: {
+    padding: "1rem",
+    borderRadius: "8px",
+    backgroundColor: "#fff",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "1rem",
+    flexWrap: "wrap",
+  },
+
+  viewHistoryButton: {
+    padding: "0.4rem 0.8rem",
+    fontSize: "0.9rem",
+    cursor: "pointer",
+    borderRadius: "4px",
+    border: "1px solid #4CAF50",
+    backgroundColor: "#4CAF50",
+    color: "white",
+    whiteSpace: "nowrap",
   },
 
   /* Modal styles */
