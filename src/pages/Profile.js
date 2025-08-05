@@ -20,24 +20,6 @@ function Profile() {
   const [newPhone, setNewPhone] = useState("");
   const navigate = useNavigate();
 
-  const [userInfo, setUserInfo] = useState({ username: "", email: "", phone: "" });
-
-  useEffect(() => {
-    const username = localStorage.getItem("username");
-    if (!username) return;
-  
-    fetch(`http://localhost:5001/user-info/${username}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setUserInfo(data);
-      })
-      .catch((err) => {
-        console.error("Error fetching user info:", err);
-      });
-  }, []);
-  
-
-
   useEffect(() => {
     const username = localStorage.getItem("username");
 
@@ -436,10 +418,7 @@ function Profile() {
 
       <section className="profile-section">
         <h3>Account Settings</h3>
-        <p><strong>User:</strong> {userInfo.username}</p>
-        <p><strong>Email:</strong> {userInfo.email}</p>
-        <p><strong>Phone:</strong> {userInfo.phone || "Not provided"}</p>
-
+        
         <button
           className="setting-btn"
           onClick={() => setShowPasswordForm(!showPasswordForm)}
