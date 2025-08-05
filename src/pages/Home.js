@@ -72,7 +72,7 @@ function Home() {
             <div className="action-buttons">
               <button
                 className="edit-btn"
-                onClick={() => (window.location.href = "/scheduling")}
+                onClick={() => (window.location.href = "/edit-appointment")}
               >
                 Edit
               </button>

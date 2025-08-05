@@ -82,4 +82,13 @@
   .submit-button:hover {
     background-color: #41AB5D;
   }
-  
+  .selected-slot {
+  font-weight: 600;
+  color: #2a9d8f; /* nice teal color */
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  background-color: #e0f7f5;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: inline-block;
+}
