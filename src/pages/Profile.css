@@ -51,6 +51,7 @@
     border-radius: 6px;
     cursor: pointer;
     transition: background 0.2s ease;
+    width: 200px;
   }
   
   .setting-btn:hover {
@@ -79,7 +80,6 @@
 
 .password-form button {
   padding: 8px;
-  background-color: #007bff;
   border: none;
   color: white;
   border-radius: 6px;
@@ -124,4 +124,21 @@
   cursor: pointer;
   border-radius: 4px;
   transition: background-color 0.2s ease;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.emailPhone {
+  display: flex;
+  gap: 30px;
+}
+
+.emailPhoneInput{
+  flex: 1;
+  cursor: pointer;
+  border-radius: 6px;
 }

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import Modal from "../components/Modal";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 function Profile() {
   const [medicalData, setMedicalData] = useState(null);
@@ -73,9 +75,32 @@ function Profile() {
     }
   }, []);
 
+
+  const validateEmail = (email) => {
+    if (!email) return true; // allow empty if optional
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  
+  const validatePhone = (phone) => {
+    if (!phone) return true; // allow empty if optional
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/; // basic E.164 international format
+    return phoneRegex.test(phone);
+  };
+
   const handleContactUpdate = () => {
     const username = localStorage.getItem("username");
 
+    if (!validateEmail(newEmail)) {
+      setAlertMessage("Please enter a valid email address.");
+      return;
+    }
+  
+    if (!validatePhone(newPhone)) {
+      setAlertMessage("Please enter a valid phone number.");
+      return;
+    }
+    
     fetch(`http://localhost:5001/update-contact-info/${username}`, {
       method: "PUT",
       headers: {
@@ -166,9 +191,24 @@ function Profile() {
       });
   };
 
+  const validatePassword = (password) => {
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecial = /[!@#$%^&*()_+{}\[\]:;"'|\\<>,.?/~`-]/.test(password);
+    const isLongEnough = password.length >= 8;
+
+    return hasLowercase && hasUppercase && hasNumber && hasSpecial && isLongEnough;
+  };
+
   const handlePasswordChange = () => {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
+
+    if (!validatePassword(newPassword)) {
+      setAlertMessage("Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.");
+      return;
+    }
 
     fetch("http://localhost:5001/change-password", {
       method: "POST",
@@ -378,6 +418,7 @@ function Profile() {
 
       <section className="profile-section">
         <h3>Account Settings</h3>
+        
         <button
           className="setting-btn"
           onClick={() => setShowPasswordForm(!showPasswordForm)}
@@ -404,18 +445,23 @@ function Profile() {
         </button>
         {showContactForm && (
           <div className="contact-form">
-            <input
-              type="email"
-              placeholder="New Email (Optional)"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="New Phone (Optional)"
-              value={newPhone}
-              onChange={(e) => setNewPhone(e.target.value)}
-            />
+            <div className="emailPhone">
+              <input
+                type="email"
+                placeholder="New Email (Optional)"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                className="emailPhoneInput"
+              />
+
+              <PhoneInput
+                placeholder="New Phone (Optional)"
+                defaultCountry="US"
+                value={newPhone}
+                onChange={setNewPhone}
+                className="emailPhoneInput"
+              />
+            </div>
             <button onClick={handleContactUpdate}>Submit</button>
           </div>
         )}{" "}
