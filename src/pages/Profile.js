@@ -20,6 +20,24 @@ function Profile() {
   const [newPhone, setNewPhone] = useState("");
   const navigate = useNavigate();
 
+  const [userInfo, setUserInfo] = useState({ username: "", email: "", phone: "" });
+
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    if (!username) return;
+  
+    fetch(`http://localhost:5001/user-info/${username}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setUserInfo(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching user info:", err);
+      });
+  }, []);
+  
+
+
   useEffect(() => {
     const username = localStorage.getItem("username");
 
@@ -75,9 +93,32 @@ function Profile() {
     }
   }, []);
 
+
+  const validateEmail = (email) => {
+    if (!email) return true; // allow empty if optional
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  
+  const validatePhone = (phone) => {
+    if (!phone) return true; // allow empty if optional
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/; // basic E.164 international format
+    return phoneRegex.test(phone);
+  };
+
   const handleContactUpdate = () => {
     const username = localStorage.getItem("username");
 
+    if (!validateEmail(newEmail)) {
+      setAlertMessage("Please enter a valid email address.");
+      return;
+    }
+  
+    if (!validatePhone(newPhone)) {
+      setAlertMessage("Please enter a valid phone number.");
+      return;
+    }
+    
     fetch(`http://localhost:5001/update-contact-info/${username}`, {
       method: "PUT",
       headers: {
@@ -168,9 +209,24 @@ function Profile() {
       });
   };
 
+  const validatePassword = (password) => {
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecial = /[!@#$%^&*()_+{}\[\]:;"'|\\<>,.?/~`-]/.test(password);
+    const isLongEnough = password.length >= 8;
+
+    return hasLowercase && hasUppercase && hasNumber && hasSpecial && isLongEnough;
+  };
+
   const handlePasswordChange = () => {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
+
+    if (!validatePassword(newPassword)) {
+      setAlertMessage("Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.");
+      return;
+    }
 
     fetch("http://localhost:5001/change-password", {
       method: "POST",
@@ -380,6 +436,10 @@ function Profile() {
 
       <section className="profile-section">
         <h3>Account Settings</h3>
+        <p><strong>User:</strong> {userInfo.username}</p>
+        <p><strong>Email:</strong> {userInfo.email}</p>
+        <p><strong>Phone:</strong> {userInfo.phone || "Not provided"}</p>
+
         <button
           className="setting-btn"
           onClick={() => setShowPasswordForm(!showPasswordForm)}
