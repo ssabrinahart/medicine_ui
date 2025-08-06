@@ -64,11 +64,11 @@ function Header() {
                     Medical Histories
                   </NavLink>
                 </li> */}
-                {/* <li>
+                <li>
                   <NavLink to="/scheduling" className="nav-link">
                     Manage Patients
                   </NavLink>
-                </li> */}
+                </li>
                 <li>
                   <NavLink to="/profile" className="nav-link">
                     Profile

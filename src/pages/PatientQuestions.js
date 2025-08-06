@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import Modal from "../components/Modal";
-import {useEffect} from "react";
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-
 
 function PatientQuestions() {
   const [step, setStep] = useState(1);
@@ -36,34 +35,35 @@ function PatientQuestions() {
     today.setFullYear(today.getFullYear() - 21);
     return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
   };
-  
+
   const handleBack = () => {
-    setAlertMessage(""); 
+    setAlertMessage("");
     setStep((prev) => prev - 1);
   };
-  
 
   useEffect(() => {
     const checkMedicalHistory = async () => {
       const username = localStorage.getItem("username");
       const token = localStorage.getItem("authToken");
-  
+
       if (!username || !token) return;
-  
+
       try {
-        const response = await fetch(`http://localhost:5001/medical-history/${username}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
+        const response = await fetch(
+          `http://localhost:5001/medical-history/${username}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
         if (response.ok) {
           const result = await response.json();
           const latest = result.medical_history?.[0];
-  
-        
+
           if (latest) {
             setSubmitted(!editModeFromNav); // only show summary if NOT editing
             setIsEditing(true);
@@ -83,53 +83,53 @@ function PatientQuestions() {
               comments: latest.additional_comments || "",
             });
           }
-          
         }
       } catch (error) {
         console.error("Failed to check medical history", error);
       }
     };
-  
+
     checkMedicalHistory();
   }, []);
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
+
     // Prevent numbers or special characters in names
-    if ((name === "firstName" || name === "lastName") && /[^a-zA-Z\s]/.test(value)) {
+    if (
+      (name === "firstName" || name === "lastName") &&
+      /[^a-zA-Z\s]/.test(value)
+    ) {
       return; // Stop updating if invalid character is typed
     }
-  
+
     // Prevent letters in weight
     if (name === "weight" && /[^0-9]/.test(value)) {
       return;
     }
-  
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
 
   const nextStep = () => setStep((prev) => prev + 1);
-  
+
   const handleSubmit = async () => {
     const authToken = localStorage.getItem("authToken");
     const username = localStorage.getItem("username");
-  
+
     if (!username) {
       alert("You must be logged in to submit the form.");
       return;
     }
-  
+
     const fullData = { ...formData, username };
-  
+
     try {
       const method = isEditing ? "PUT" : "POST";
       const url = isEditing
         ? `http://localhost:5001/medical-history/${username}`
         : "http://localhost:5001/medical-history";
-  
+
       const response = await fetch(url, {
         method: method,
         headers: {
@@ -138,7 +138,7 @@ function PatientQuestions() {
         },
         body: JSON.stringify(fullData),
       });
-  
+
       if (response.ok) {
         setSubmitted(true);
         setAlertMessage(
@@ -156,7 +156,6 @@ function PatientQuestions() {
       alert("Network error. Please try again.");
     }
   };
-  
 
   const calculateAge = (dob) => {
     if (!dob) return "";
@@ -167,24 +166,36 @@ function PatientQuestions() {
   };
 
   if (submitted) {
-
     const fullName = `${formData.firstName} ${formData.lastName}`;
     const age = calculateAge(formData.dob);
-    
+
     return (
       <div className="form-container">
         <h2>Medical History Has Been Submitted</h2>
-        <p><strong>Patient:</strong> {fullName}</p>
-        <p><strong>Gender:</strong> {formData.gender}</p>
-        <p><strong>Age:</strong> {age}</p>
-        <p><strong>Height:</strong> {formData.height}</p>
-        <p><strong>Weight:</strong> {formData.weight}</p>
-        <button onClick={() => {
-      setSubmitted(false);
-      setStep(1);
-    }}>Edit Medical History</button>
+        <p>
+          <strong>Patient:</strong> {fullName}
+        </p>
+        <p>
+          <strong>Gender:</strong> {formData.gender}
+        </p>
+        <p>
+          <strong>Age:</strong> {age}
+        </p>
+        <p>
+          <strong>Height:</strong> {formData.height}
+        </p>
+        <p>
+          <strong>Weight:</strong> {formData.weight}
+        </p>
+        <button
+          onClick={() => {
+            setSubmitted(false);
+            setStep(1);
+          }}
+        >
+          Edit Medical History
+        </button>
       </div>
-      
     );
   }
 
@@ -197,31 +208,27 @@ function PatientQuestions() {
         formData.gender
       );
     }
-  
-    if (step === 2) {
-      return (
-        formData.weight.trim() &&
-        formData.height.trim()
 
-      );
+    if (step === 2) {
+      return formData.weight.trim() && formData.height.trim();
     }
-  
+
     if (step === 3) {
       return formData.cannabisUse;
     }
-  
+
     return true;
   };
-  
+
   const handleNext = () => {
     if (step === 2) {
       if (!feet || inches === "") {
         setAlertMessage("Please select both feet and inches for height.");
         return;
       }
-  
+
       const combinedHeight = `${feet} ft ${inches} in`;
-  
+
       if (formData.weight.trim() && combinedHeight) {
         setFormData((prev) => ({
           ...prev,
@@ -229,29 +236,32 @@ function PatientQuestions() {
         }));
         nextStep();
       } else {
-        setAlertMessage("Please fill in all required fields before continuing.");
+        setAlertMessage(
+          "Please fill in all required fields before continuing."
+        );
       }
-  
-      return; 
+
+      return;
     }
-  
+
     if (validateStep()) {
-      setAlertMessage(""); 
+      setAlertMessage("");
       nextStep();
     } else {
       setAlertMessage("Please fill in all required fields before continuing.");
     }
   };
-  
-  
+
   return (
     <div className="form-container">
       <h2>Patient Medical History</h2>
-      
+
       <form onSubmit={(e) => e.preventDefault()}>
         {step === 1 && (
           <>
-            <div>First Name <span className="required-asterisk">*</span></div>
+            <div>
+              First Name <span className="required-asterisk">*</span>
+            </div>
             <input
               name="firstName"
               placeholder="First Name"
@@ -260,7 +270,9 @@ function PatientQuestions() {
               required
               pattern="^[A-Za-z\s]+$"
             />
-            <div>Last Name <span className="required-asterisk">*</span></div>
+            <div>
+              Last Name <span className="required-asterisk">*</span>
+            </div>
             <input
               name="lastName"
               placeholder="Last Name"
@@ -268,7 +280,10 @@ function PatientQuestions() {
               onChange={handleChange}
               required
             />
-            <div>Date of Birth (Must be 21+)<span className="required-asterisk">* </span></div>
+            <div>
+              Date of Birth (Must be 21+)
+              <span className="required-asterisk">* </span>
+            </div>
             <input
               name="dob"
               type="date"
@@ -277,7 +292,9 @@ function PatientQuestions() {
               required
               max={getMaxDOB()}
             />
-            <div>Gender <span className="required-asterisk">*</span></div>
+            <div>
+              Gender <span className="required-asterisk">*</span>
+            </div>
             <select
               name="gender"
               placeholder="Gender"
@@ -289,13 +306,17 @@ function PatientQuestions() {
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>
-            <button type="button" onClick={handleNext}>Next</button>
+            <button type="button" onClick={handleNext}>
+              Next
+            </button>
           </>
         )}
 
         {step === 2 && (
           <>
-            <div>Weight <span className="required-asterisk">*</span></div>
+            <div>
+              Weight <span className="required-asterisk">*</span>
+            </div>
             <input
               name="weight"
               placeholder="Weight (lbs)"
@@ -303,7 +324,9 @@ function PatientQuestions() {
               onChange={handleChange}
               required
             />
-            <div>Height <span className="required-asterisk">*</span></div>
+            <div>
+              Height <span className="required-asterisk">*</span>
+            </div>
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
               <select
                 name="feet"
@@ -313,7 +336,9 @@ function PatientQuestions() {
               >
                 <option value="">Feet</option>
                 {[...Array(8).keys()].slice(1).map((f) => (
-                  <option key={f} value={f}>{f} ft</option>
+                  <option key={f} value={f}>
+                    {f} ft
+                  </option>
                 ))}
               </select>
 
@@ -325,7 +350,9 @@ function PatientQuestions() {
               >
                 <option value="">Inches</option>
                 {[...Array(12).keys()].map((i) => (
-                  <option key={i} value={i}>{i} in</option>
+                  <option key={i} value={i}>
+                    {i} in
+                  </option>
                 ))}
               </select>
             </div>
@@ -344,8 +371,20 @@ function PatientQuestions() {
               onChange={handleChange}
             ></textarea>
             <div className="backNextButtons">
-              <button type="button" className="half-button" onClick={handleBack}>Back</button>
-              <button type="button" className="half-button" onClick={handleNext}>Next</button>
+              <button
+                type="button"
+                className="half-button"
+                onClick={handleBack}
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                className="half-button"
+                onClick={handleNext}
+              >
+                Next
+              </button>
             </div>
           </>
         )}
@@ -366,7 +405,9 @@ function PatientQuestions() {
               value={formData.injuries}
               onChange={handleChange}
             ></textarea>
-            <div>Cannabis Use <span className="required-asterisk">*</span></div>
+            <div>
+              Cannabis Use <span className="required-asterisk">*</span>
+            </div>
             <select
               name="cannabisUse"
               value={formData.cannabisUse}
@@ -384,8 +425,20 @@ function PatientQuestions() {
               onChange={handleChange}
             ></textarea>
             <div className="backNextButtons">
-              <button type="button" className="half-button" onClick={handleBack}>Back</button>
-              <button type="button" className="half-button" onClick={handleNext}>Next</button>
+              <button
+                type="button"
+                className="half-button"
+                onClick={handleBack}
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                className="half-button"
+                onClick={handleNext}
+              >
+                Next
+              </button>
             </div>
           </>
         )}
@@ -400,8 +453,20 @@ function PatientQuestions() {
               onChange={handleChange}
             ></textarea>
             <div className="backNextButtons">
-              <button type="button" className="half-button" onClick={handleBack}>Back</button>
-              <button type="button" className="half-button" onClick={handleNext}>Next</button>
+              <button
+                type="button"
+                className="half-button"
+                onClick={handleBack}
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                className="half-button"
+                onClick={handleNext}
+              >
+                Next
+              </button>
             </div>
           </>
         )}
@@ -409,22 +474,59 @@ function PatientQuestions() {
         {step === 5 && (
           <div className="confirmation-summary">
             <h3>Confirm Your Information</h3>
-            <p><strong>Name:</strong> {formData.firstName} {formData.lastName}</p>
-            <p><strong>Date of Birth:</strong> {formData.dob}</p>
-            <p><strong>Gender:</strong> {formData.gender}</p>
-            <p><strong>Weight:</strong> {formData.weight} lbs</p>
-            <p><strong>Height:</strong> {formData.height}</p>
-            <p><strong>Allergies:</strong> {formData.allergies || "None"}</p>
-            <p><strong>Medications:</strong> {formData.medications || "None"}</p>
-            <p><strong>Conditions:</strong> {formData.conditions || "None"}</p>
-            <p><strong>Injuries:</strong> {formData.injuries || "None"}</p>
-            <p><strong>Used Cannabis Before?:</strong> {formData.cannabisUse}</p>
-            <p><strong>Reason for Visit:</strong> {formData.reason || "None"}</p>
-            <p><strong>Additional Comments:</strong> {formData.comments || "None"}</p>
+            <p>
+              <strong>Name:</strong> {formData.firstName} {formData.lastName}
+            </p>
+            <p>
+              <strong>Date of Birth:</strong> {formData.dob}
+            </p>
+            <p>
+              <strong>Gender:</strong> {formData.gender}
+            </p>
+            <p>
+              <strong>Weight:</strong> {formData.weight} lbs
+            </p>
+            <p>
+              <strong>Height:</strong> {formData.height}
+            </p>
+            <p>
+              <strong>Allergies:</strong> {formData.allergies || "None"}
+            </p>
+            <p>
+              <strong>Medications:</strong> {formData.medications || "None"}
+            </p>
+            <p>
+              <strong>Conditions:</strong> {formData.conditions || "None"}
+            </p>
+            <p>
+              <strong>Injuries:</strong> {formData.injuries || "None"}
+            </p>
+            <p>
+              <strong>Used Cannabis Before?:</strong> {formData.cannabisUse}
+            </p>
+            <p>
+              <strong>Reason for Visit:</strong> {formData.reason || "None"}
+            </p>
+            <p>
+              <strong>Additional Comments:</strong>{" "}
+              {formData.comments || "None"}
+            </p>
 
             <div className="backNextButtons">
-              <button type="button" className="half-button" onClick={handleBack}>Back</button>
-              <button type="button" className="half-button" onClick={handleSubmit}>Book</button>
+              <button
+                type="button"
+                className="half-button"
+                onClick={handleBack}
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                className="half-button"
+                onClick={handleSubmit}
+              >
+                Submit
+              </button>
             </div>
           </div>
         )}
