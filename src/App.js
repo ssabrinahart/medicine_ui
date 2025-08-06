@@ -54,11 +54,11 @@ function App() {
     checkAuthStatus();
 
     window.addEventListener("storage", checkAuthStatus);
-    window.addEventListener("logout", handleLogout); // ✅ use here
+    window.addEventListener("logout", handleLogout); // use here
 
     return () => {
       window.removeEventListener("storage", checkAuthStatus);
-      window.removeEventListener("logout", handleLogout); // ✅ and here
+      window.removeEventListener("logout", handleLogout); // and here
     };
   }, []);
 

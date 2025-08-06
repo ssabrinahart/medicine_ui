@@ -379,7 +379,6 @@ function Profile() {
                 <strong>Comments:</strong> {medicalData.comments}
               </li>
             </ul>
-            <button onClick={handleEditClick}>Edit</button>
           </>
         ) : (
           <p>No medical history submitted.</p>

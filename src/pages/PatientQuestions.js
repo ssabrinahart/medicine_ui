@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Modal from "../components/Modal";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function PatientQuestions() {
   const [step, setStep] = useState(1);
@@ -10,6 +10,7 @@ function PatientQuestions() {
   const location = useLocation();
   const editModeFromNav = location.state?.editMode || false;
   const [isEditing, setIsEditing] = useState(editModeFromNav);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -168,7 +169,7 @@ function PatientQuestions() {
   if (submitted) {
     const fullName = `${formData.firstName} ${formData.lastName}`;
     const age = calculateAge(formData.dob);
-
+  
     return (
       <div className="form-container">
         <h2>Medical History Has Been Submitted</h2>
@@ -187,14 +188,23 @@ function PatientQuestions() {
         <p>
           <strong>Weight:</strong> {formData.weight}
         </p>
-        <button
-          onClick={() => {
-            setSubmitted(false);
-            setStep(1);
-          }}
-        >
-          Edit Medical History
-        </button>
+        <div className="button-group">
+          <button
+            onClick={() => {
+              setSubmitted(false);
+              setStep(1);
+            }}
+          >
+            Edit Medical History
+          </button>
+  
+          <button
+            onClick={() => navigate("/scheduling")}
+            style={{ marginLeft: "1rem" }}
+          >
+            Return to Booking
+          </button>
+        </div>
       </div>
     );
   }

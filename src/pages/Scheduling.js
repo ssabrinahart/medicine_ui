@@ -19,7 +19,7 @@ function Scheduling() {
   const [showModal, setShowModal] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
 
-  // ✅ Fetch all appointment times
+  // Fetch all appointment times
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -37,7 +37,7 @@ function Scheduling() {
 
         const events = data.appointments.map((appt) => {
           const startDateTime = new Date(`${appt.date}T${appt.time}`);
-          const endDateTime = new Date(startDateTime.getTime() + 30 * 60000); // ✅ 30 min slots
+          const endDateTime = new Date(startDateTime.getTime() + 30 * 60000); // 30 min slots
 
           return {
             id: `${appt.date}-${appt.time}`,
@@ -279,3 +279,4 @@ const modalBox = {
   borderRadius: 8,
   boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
 };
+
