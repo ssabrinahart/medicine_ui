@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
+import Modal from "../components/Modal"; // make sure path is correct
 import "./Home.css";
 
 function Home() {
   const [appointment, setAppointment] = useState(null);
+  const [modalMessage, setModalMessage] = useState("");
+  const [showConfirmCancel, setShowConfirmCancel] = useState(false);
 
   useEffect(() => {
     const username = localStorage.getItem("username");
@@ -31,22 +34,26 @@ function Home() {
   const handleCancelAppointment = () => {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
-
-    fetch("http://localhost:5001/cancel-appointment", {
-      method: "DELETE",
+    console.log("Cancel clicked!");
+    fetch("http://localhost:5001/refund", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ username }), 
+      body: JSON.stringify({ username }),
     })
       .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
       .then(({ ok, data }) => {
-        alert(data.message);
+        setModalMessage(data.message);
         if (ok) setAppointment(null);
       })
       .catch((err) => {
-        console.error("Error canceling appointment:", err);
+        console.error("Error processing refund:", err);
+        setModalMessage("Error processing refund.");
+      })
+      .finally(() => {
+        setShowConfirmCancel(false);
       });
   };
 
@@ -78,10 +85,7 @@ function Home() {
               </button>
               <button
                 className="cancel-btn"
-                onClick={() => {
-                  handleCancelAppointment();
-                  // setAppointment(null);
-                }}
+                onClick={() => setShowConfirmCancel(true)}
               >
                 Cancel
               </button>
@@ -100,6 +104,27 @@ function Home() {
           <li>Arrive 10 minutes early</li>
         </ul>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmCancel && (
+        <Modal
+          message="Are you sure you want to cancel your appointment?"
+          onClose={() => setShowConfirmCancel(false)}
+        >
+          <button
+            className="confirm-btn"
+            onClick={handleCancelAppointment}
+            style={{ marginTop: "10px" }}
+          >
+            Yes, Cancel
+          </button>
+        </Modal>
+      )}
+
+      {/* Info Modal */}
+      {modalMessage && (
+        <Modal message={modalMessage} onClose={() => setModalMessage("")} />
+      )}
     </div>
   );
 }

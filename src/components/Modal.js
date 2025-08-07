@@ -1,38 +1,21 @@
 import React from "react";
-import "./Modal";
+import "./Modal.css";
 
-
-const modalBackdrop = {
-  position: "fixed",
-  inset: 0,
-  background: "rgba(0,0,0,0.4)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  zIndex: 9999,
-};
-
-const modalBox = {
-  width: 420,
-  padding: 20,
-  background: "white",
-  borderRadius: 8,
-  boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
-  textAlign: "center",
-};
-
-const Modal = ({ message, onClose }) => {
+const Modal = ({ message, onClose, children }) => {
   if (!message) return null;
 
   return (
-    <div style={modalBackdrop}>
-      <div style={modalBox}>
+    <div className="modal-overlay">
+      <div className="modal">
         <p>{message}</p>
-        <button onClick={onClose}>OK</button>
+        {children ? (
+          <div className="modal-actions">{children}</div> // render passed buttons
+        ) : (
+          <button onClick={onClose}>OK</button> // fallback for info modals
+        )}
       </div>
     </div>
   );
 };
 
 export default Modal;
-
