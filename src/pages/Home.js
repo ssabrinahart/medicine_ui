@@ -35,22 +35,23 @@ function Home() {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
     console.log("Cancel clicked!");
-    fetch("http://localhost:5001/refund", {
-      method: "POST",
+
+    fetch(`http://localhost:5001/cancel-appointment/${username}`, {
+      method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ username }),
     })
       .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
       .then(({ ok, data }) => {
         setModalMessage(data.message);
-        if (ok) setAppointment(null);
+        if (ok) {
+          setAppointment(null);
+        }
       })
       .catch((err) => {
-        console.error("Error processing refund:", err);
-        setModalMessage("Error processing refund.");
+        console.error("Error cancelling appointment:", err);
+        setModalMessage("Error cancelling appointment.");
       })
       .finally(() => {
         setShowConfirmCancel(false);
