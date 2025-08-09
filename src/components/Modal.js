@@ -1,14 +1,18 @@
 import React from "react";
-import "./Modal";
+import "./Modal.css";
 
-const Modal = ({ message, onClose }) => {
+const Modal = ({ message, onClose, children }) => {
   if (!message) return null;
 
   return (
     <div className="modal-overlay">
       <div className="modal">
         <p>{message}</p>
-        <button onClick={onClose}>OK</button>
+        {children ? (
+          <div className="modal-actions">{children}</div> // render passed buttons
+        ) : (
+          <button onClick={onClose}>OK</button> // fallback for info modals
+        )}
       </div>
     </div>
   );

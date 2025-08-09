@@ -49,9 +49,9 @@ function Login({ onLoginSuccess }) {
 
             navigate("/admin-dashboard");
           } else {
-            console.log("Navigating to profile dashboard...");
+            console.log("Navigating to home dashboard...");
 
-            navigate("/profile");
+            navigate("/home");
           }
         }, 1500);
       }
