@@ -1,0 +1,93 @@
+.header-logo {
+    width: 60px;       /* set fixed width */
+    height: 60px;      /* set same height as width */
+    border-radius: 50%;
+    object-fit: cover; /* ensures image scales nicely inside the circle */
+  }
+
+  .header {
+    background-color: #333;
+    padding: 20px;
+    text-align: center;
+    color: #FFFFFF;
+    font-family: 'Righteous', monospace;
+    font-weight: 200;
+    justify-content: space-between;
+  }
+  
+  .header-link {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .header-title-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .headerText {
+    font-size: 24px;
+    color: #FFFFFF;
+  }
+
+
+  /* General header styling */
+.header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  
+  /* Navigation styling */
+  #primary-navigation {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  #primary-navigation li {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Base link style (plain text) */
+  .nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Hover effect: lighter background */
+  .nav-link:hover {
+    background-color: #555; /* lighter than #333 */
+  }
+  
+  /* Active link (current page) */
+  .nav-link.active {
+    background-color: #555; /* same as hover color */
+  }
+  
+  /* Logout button styled like a link */
+  .logout-button {
+    background: none;
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font: inherit;
+  }
+  
+  .logout-button:hover {
+    background-color: #555;
+  }
+  
