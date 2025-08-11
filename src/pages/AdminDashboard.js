@@ -237,6 +237,10 @@ function AdminDashboard() {
         view={currentView}
         onNavigate={(date) => setCurrentDate(date)}
       />
+      {/* Create availability modal */}
+      <button style={styles.createAppointmentButton} onClick={openModal}>
+        Create Appointment
+      </button>
 
       <div style={{ marginTop: "2rem" }}>
         <h3>Upcoming Appointments List</h3>
@@ -322,11 +326,6 @@ function AdminDashboard() {
           </div>
         </div>
       )}
-
-      {/* Create availability modal */}
-      <button style={styles.createAppointmentButton} onClick={openModal}>
-        Create Appointment
-      </button>
 
       {successMessage && (
         <div
@@ -481,7 +480,7 @@ const styles = {
     margin: "0.2rem 0",
   },
   createAppointmentButton: {
-    marginTop: "1rem",
+    marginTop: "1.5rem",
     padding: "0.6rem 1.2rem",
     backgroundColor: "#4CAF50",
     color: "white",
