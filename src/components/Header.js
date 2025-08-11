@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import "./Header.css"; 
 
 function Header() {
   const navigate = useNavigate();
@@ -46,9 +47,13 @@ function Header() {
   };
 
   return (
-    <header style={styles.header}>
-      <img src="/logo.jpg" alt="LeafRX Logo" className="header-logo" />
-      <h1>LeafRX Consultation Services</h1>
+    <header className="header">
+      <NavLink to="/home" className="header-link">
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <img src="/logo.jpg" alt="LeafRX Logo" className="header-logo" />
+        <h1 className="headerText">LeafRX <br /> Consultation Services</h1>
+      </div>
+    </NavLink>
       <ul id="primary-navigation">
         {isLoggedIn ? (
           <>
@@ -59,11 +64,6 @@ function Header() {
                     Dashboard
                   </NavLink>
                 </li>
-                {/* <li>
-                  <NavLink to="/admin--" className="nav-link">
-                    Medical Histories
-                  </NavLink>
-                </li> */}
                 <li>
                   <NavLink to="/scheduling" className="nav-link">
                     Manage Patients
@@ -116,18 +116,5 @@ function Header() {
     </header>
   );
 }
-
-const styles = {
-  header: {
-    backgroundColor: "#333",
-    color: "#fff",
-    padding: "20px",
-    textAlign: "center",
-  },
-  link: {
-    color: "white",
-    textDecoration: "none",
-  },
-};
 
 export default Header;

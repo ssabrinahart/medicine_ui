@@ -60,74 +60,88 @@ function Home() {
 
   return (
     <div className="home-container">
-      <div className="section">
-        <h2>UPCOMING</h2>
-        {appointment ? (
+      <div className="home-grid">
+        {/* LEFT: service/goal info */}
+        <section className="left-panel section info-card">
+          <h2>About LeafRX</h2>
+          <p>
+            LeafRX connects patients with licensed providers for secure,
+            streamlined virtual cannabis consultations.
+          </p>
+          <ul className="feature-list">
+            <li>Book, edit, or cancel appointments in minutes</li>
+            <li>Complete medical history securely</li>
+            <li>Transparent pricing and reminders</li>
+          </ul>
+  
+          <h3>Our Goal</h3>
+          <p>
+            Make medical cannabis access simple, safe, and compliant.
+          </p>
+        </section>
+  
+        {/* RIGHT: appointments */}
+        <section className="right-panel section info-card">
+          <h2>UPCOMING</h2>
           <div className="appointment-card">
-            <p>
-              <strong>Day:</strong> {appointment.day}
-            </p>
-            <p>
-              <strong>Time:</strong> {appointment.time}
-            </p>
-            <p>
-              <strong>Location:</strong> {appointment.location}
-            </p>
-            <p>
-              <strong>Provider:</strong> {appointment.provider}
-            </p>
+            {appointment ? (
+              <>
+                <p><strong>Day:</strong> {appointment.day}</p>
+                <p><strong>Time:</strong> {appointment.time}</p>
+                <p><strong>Location:</strong> {appointment.location}</p>
+                <p><strong>Provider:</strong> {appointment.provider}</p>
 
-            <div className="action-buttons">
-              <button
-                className="edit-btn"
-                onClick={() => (window.location.href = "/edit-appointment")}
-              >
-                Edit
-              </button>
-              <button
-                className="cancel-btn"
-                onClick={() => setShowConfirmCancel(true)}
-              >
-                Cancel
-              </button>
-            </div>
+                <div className="action-buttons">
+                  <button
+                    className="edit-btn"
+                    onClick={() => (window.location.href = "/edit-appointment")}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="cancel-btn"
+                    onClick={() => setShowConfirmCancel(true)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p>No appointment scheduled yet.</p>
+            )}
           </div>
-        ) : (
-          <p>No appointment scheduled yet.</p>
-        )}
-      </div>
 
-      <div className="section">
-        <h3>Reminder:</h3>
-        <ul className="reminder-list">
-          {!appointment && <li>Fill Out Medical History</li>}
-          <li>Pay before appointment</li>
-          <li>Arrive 10 minutes early</li>
-        </ul>
-      </div>
+          <div className="section">
+            <h3>Reminder:</h3>
+            <ul className="feature-list">
+            {!appointment && <li>Fill Out Medical History</li>}
+              <li>Pay before appointment</li>
+              <li>Arrive 10 minutes early</li>
+            </ul>
+          </div>
+        </section>
 
+      </div>
+  
       {/* Confirmation Modal */}
       {showConfirmCancel && (
         <Modal
           message="Are you sure you want to cancel your appointment?"
           onClose={() => setShowConfirmCancel(false)}
         >
-          <button
-            className="confirm-btn"
-            onClick={handleCancelAppointment}
-            style={{ marginTop: "10px" }}
-          >
+          <button className="confirm-btn" onClick={handleCancelAppointment}>
             Yes, Cancel
           </button>
         </Modal>
       )}
-
+  
       {/* Info Modal */}
       {modalMessage && (
         <Modal message={modalMessage} onClose={() => setModalMessage("")} />
       )}
     </div>
   );
+  
 }
 
 export default Home;
