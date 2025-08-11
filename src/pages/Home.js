@@ -76,8 +76,7 @@ function Home() {
   
           <h3>Our Goal</h3>
           <p>
-            Make medical cannabis access simple, safe, and compliant—so you can
-            focus on feeling better.
+            Make medical cannabis access simple, safe, and compliant.
           </p>
         </section>
   
