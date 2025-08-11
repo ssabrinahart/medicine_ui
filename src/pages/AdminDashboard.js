@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-
+import WeeklyAvailabilityForm from "./WeeklyAvailabilityForm";
 const localizer = momentLocalizer(moment);
 
 function AdminDashboard() {
@@ -22,10 +22,43 @@ function AdminDashboard() {
   });
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentView, setCurrentView] = useState("month");
 
   const [successMessage, setSuccessMessage] = useState("");
 
   const navigate = useNavigate();
+const fetchAppointments = async () => {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    navigate("/login");
+    return;
+  }
+  try {
+    const apptResponse = await fetch(
+      "http://localhost:5001/admin/patient-appointments",
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (apptResponse.status === 403) {
+      navigate("/unauthorized");
+      return;
+    }
+    if (!apptResponse.ok) throw new Error("Failed to fetch appointments");
+    const apptData = await apptResponse.json();
+    const events = apptData.appointments.map((appt) => ({
+      id: appt.id || `${appt.patient_id}-${appt.date}-${appt.time}`,
+      title: appt.booked ? `Booked` : `Available`,
+      start: new Date(`${appt.date}T${appt.time}`),
+      end: new Date(new Date(`${appt.date}T${appt.time}`).getTime() + 30 * 60000),
+      patient_id: appt.patient_id,
+      booked: appt.booked,
+    }));
+
+    setAppointments(events);
+  } catch (error) {
+    console.error("Error fetching appointments:", error);
+  }
+};
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -48,6 +81,7 @@ function AdminDashboard() {
           navigate("/unauthorized");
           return;
         }
+        await fetchAppointments;
 
         // Fetch appointments
         const apptResponse = await fetch(
@@ -63,20 +97,14 @@ function AdminDashboard() {
         const apptData = await apptResponse.json();
 
         console.log("time " + JSON.stringify(apptData.time));
-        const events = apptData.appointments
-          .filter(
-            (appt) =>
-              !appt.date.startsWith("gAAAAA") && !appt.time.startsWith("gAAAAA")
-          )
-          .map((appt) => ({
-            id: appt.id || `${appt.patient_id}-${appt.date}-${appt.time}`, // fallback if appt.id missing
-            title: `Booked`,
-            start: new Date(`${appt.date}T${appt.time}`),
-            end: new Date(
-              new Date(`${appt.date}T${appt.time}`).getTime() + 50 * 60000
-            ),
-            patient_id: appt.patient_id,
-          }));
+        const events = apptData.appointments.map((appt) => ({
+          id: appt.id || `${appt.patient_id}-${appt.date}-${appt.time}`,
+          title: appt.booked ? `Booked` : `Available`,
+          start: new Date(`${appt.date}T${appt.time}`),
+          end: new Date(new Date(`${appt.date}T${appt.time}`).getTime() + 30 * 60000),
+          patient_id: appt.patient_id,
+          booked: appt.booked,
+        }));
 
         console.log("appointments " + JSON.stringify(events));
         setAppointments(events);
@@ -142,115 +170,69 @@ function AdminDashboard() {
     setNewAppointment((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmitAppointment = async (e) => {
-    e.preventDefault();
 
+  const handleSubmitAvailability = async ({ weekStartDate, availability }) => {
     const token = localStorage.getItem("authToken");
+    await fetchAppointments();
     if (!token) {
       navigate("/login");
       return;
+    
     }
+  
+    const allSlots = [];
+  
+    for (const day of Object.keys(availability)) {
+      const daySlots = availability[day];
+      for (const slot of daySlots) {
+        if (!slot.start_time || !slot.duration) continue;
+  
+        const dayIndex = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].indexOf(day);
+        if (dayIndex === -1) continue;
 
-    // Build start and end date-times
-    const { date, startTime, duration } = newAppointment;
-    if (!date || !startTime || !duration) {
-      alert("Please fill in all fields");
-      return;
-    }
-
-    const startDateTime = new Date(`${date}T${startTime}`);
-    const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
-
-    try {
-      const response = await fetch(
-        "http://localhost:5001/admin/create-appointment-time",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            start_date: startDateTime.toISOString(),
-            end_date: endDateTime.toISOString(),
-          }),
-        }
-      );
-
-      if (response.ok) {
-        setSuccessMessage("Appointment created successfully");
-        setTimeout(() => setSuccessMessage(""), 2000);
+        const [hours, minutes] = slot.start_time.split(":");
+        const startDate = moment(weekStartDate)
+          .add(dayIndex, "days")
+          .hour(parseInt(hours, 10))
+          .minute(parseInt(minutes, 10))
+          .second(0)
+          .millisecond(0)
+          .toDate();
+        
+        const endDate = moment(startDate).add(slot.duration, "minutes").toDate();
+        
+        allSlots.push({
+          start_date: startDate.toISOString(),
+          end_date: endDate.toISOString(),
+        });
       }
-
-      if (!response.ok) throw new Error("Failed to create appointment");
-
-      // Optionally, you can refetch appointments here or update state directly
-      closeModal();
-      // Refresh dashboard data to show new appointment
-      setLoading(true);
-      setAppointments([]);
-      setSelectedPatient(null);
-      setMedicalHistory(null);
-      // Reload appointments & user count
-      const fetchDashboardData = async () => {
-        try {
-          const token = localStorage.getItem("authToken");
-          if (!token) {
-            navigate("/login");
-            return;
-          }
-
-          let decoded;
-          try {
-            decoded = jwtDecode(token);
-          } catch {
-            navigate("/login");
-            return;
-          }
-
-          if (!decoded.role || decoded.role.toLowerCase().trim() !== "admin") {
-            navigate("/unauthorized");
-            return;
-          }
-
-          const apptResponse = await fetch(
-            "http://localhost:5001/admin/patient-appointments",
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-          if (!apptResponse.ok) throw new Error("Failed to fetch appointments");
-          const apptData = await apptResponse.json();
-
-          const events = apptData.appointments.map((appt) => ({
-            id: appt.id,
-            title: `Patient: ${appt.patient_id}`,
-            start: new Date(appt.start_date),
-            end: new Date(appt.end_date),
-            patient_id: appt.patient_id,
-          }));
-          setAppointments(events);
-
-          const userCountResponse = await fetch(
-            "http://localhost:5001/admin/user-count",
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-          if (!userCountResponse.ok)
-            throw new Error("Failed to fetch user count");
-          const userCountData = await userCountResponse.json();
-          setUserCount(userCountData.count);
-        } catch (error) {
-          console.error("Error fetching dashboard data:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchDashboardData();
-    } catch (error) {
-      console.error("Error creating appointment:", error);
-      alert("Error creating appointment");
     }
-  };
+  
+    for (const slot of allSlots) {
+      const response = await fetch("http://localhost:5001/admin/create-appointment-time", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(slot),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to create appointment slot");
+      }
+    }
+  
+    setSuccessMessage("Availability saved successfully");
 
+    setShowModal(false);
+    setTimeout(() => setSuccessMessage(""), 2000);
+
+    await fetchAppointments();
+
+    setTimeout(() => setSuccessMessage(""), 2000);
+    
+  };
+  
   if (loading) return <div>Loading admin dashboard...</div>;
 
   return (
@@ -275,6 +257,10 @@ function AdminDashboard() {
         endAccessor="end"
         style={{ height: 500 }}
         onSelectEvent={handleSelectEvent}
+
+        date={currentDate}                     // controlled current date
+        view={currentView}                     // controlled current view
+        onNavigate={(date) => setCurrentDate(date)}
       />
       <div style={{ marginTop: "2rem" }}>
         <h3>Upcoming Appointments List</h3>
@@ -289,7 +275,7 @@ function AdminDashboard() {
                 </div>
                 <div>
                   <strong>Time:</strong>{" "}
-                  {moment(appt.start).format("YYYY-MM-DD HH:mm")}
+                  {moment(appt.start).tz("America/New_York").format("YYYY-MM-DD HH:mm")}
                 </div>
                 <button
                   style={styles.viewHistoryButton}
@@ -381,64 +367,22 @@ function AdminDashboard() {
       )}
 
       {/* Modal */}
-      {showModal && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modal}>
-            <h2>Create New Appointment</h2>
-            <form onSubmit={handleSubmitAppointment} style={styles.form}>
-              <label>
-                Date:
-                <input
-                  type="date"
-                  name="date"
-                  value={newAppointment.date}
-                  onChange={handleInputChange}
-                  required
-                  style={styles.input}
-                />
-              </label>
-
-              <label>
-                Start Time:
-                <input
-                  type="time"
-                  name="startTime"
-                  value={newAppointment.startTime}
-                  onChange={handleInputChange}
-                  required
-                  style={styles.input}
-                />
-              </label>
-
-              <label>
-                Duration (minutes):
-                <input
-                  type="number"
-                  name="duration"
-                  min="1"
-                  value={newAppointment.duration}
-                  onChange={handleInputChange}
-                  required
-                  style={styles.input}
-                />
-              </label>
-
-              <div style={styles.modalButtons}>
-                <button type="submit" style={styles.submitButton}>
-                  Create
-                </button>
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  style={styles.cancelButton}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+{showModal && (
+  <div style={styles.modalOverlay}>
+    <div style={styles.modal}>
+      <WeeklyAvailabilityForm
+        onSubmit={handleSubmitAvailability}
+      />
+      <button
+        type="button"
+        onClick={closeModal}
+        style={styles.cancelButton}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
 
       {selectedPatient && medicalHistory && (
         <div style={styles.historyContainer}>
