@@ -251,17 +251,16 @@ const fetchAppointments = async () => {
       </h2>
 
       <Calendar
-        localizer={localizer}
-        events={appointments}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500 }}
-        onSelectEvent={handleSelectEvent}
-
-        date={currentDate}                     // controlled current date
-        view={currentView}                     // controlled current view
-        onNavigate={(date) => setCurrentDate(date)}
-      />
+          localizer={localizer}
+          events={appointments}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 500 }}
+          onSelectEvent={handleSelectEvent}
+          defaultView="month"
+          defaultDate={new Date()}
+          views={["month", "week", "day"]}
+        />
       <div style={{ marginTop: "2rem" }}>
         <h3>Upcoming Appointments List</h3>
         {appointments.length === 0 ? (
