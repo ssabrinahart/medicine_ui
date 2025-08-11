@@ -461,7 +461,7 @@ function Profile() {
                 className="emailPhoneInput"
               />
             </div>
-            <button onClick={handleContactUpdate}>Submit</button>
+            <button onClick={handleContactUpdate} className="mButtom">Submit</button>
           </div>
         )}{" "}
         <button className="setting-btn delete" onClick={handleDeleteAccount}>

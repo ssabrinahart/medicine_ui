@@ -142,3 +142,7 @@
   cursor: pointer;
   border-radius: 6px;
 }
+
+.mButtom {
+  margin-bottom: 40px;
+}
