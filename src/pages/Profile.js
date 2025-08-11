@@ -235,240 +235,242 @@ function Profile() {
   };
 
   return (
-    <div className="profile-container">
-      <h2>Patient Profile</h2>
+    <div className="profPage">
+      <div className="profile-container">
+        <h2>Patient Profile</h2>
 
-      <section className="profile-section">
-        <h3>Basic Info</h3>
-        {medicalData ? (
-          <ul>
-            <li>
-              <strong>Name:</strong> {medicalData.firstName}{" "}
-              {medicalData.lastName}
-            </li>
-            <li>
-              <strong>DOB:</strong> {medicalData.dob}
-            </li>
-            <li>
-              <strong>Gender:</strong> {medicalData.gender}
-            </li>
-          </ul>
-        ) : (
-          <p>No medical info found.</p>
-        )}
-      </section>
-
-      <section className="profile-section">
-        <h3>Medical History</h3>
-
-        {isEditing ? (
-          <div className="medical-edit-form">
-            <label>
-              Height:{" "}
-              <input
-                name="height"
-                value={editedData.height || ""}
-                onChange={handleFieldChange}
-              />
-            </label>
-            <label>
-              Weight:{" "}
-              <input
-                name="weight"
-                value={editedData.weight || ""}
-                onChange={handleFieldChange}
-              />
-            </label>
-            <label>
-              Allergies:{" "}
-              <input
-                name="allergies"
-                value={editedData.allergies || ""}
-                onChange={handleFieldChange}
-              />
-            </label>
-            <label>
-              Medications:{" "}
-              <input
-                name="medications"
-                value={editedData.medications || ""}
-                onChange={handleFieldChange}
-              />
-            </label>
-            <label>
-              Conditions:{" "}
-              <input
-                name="conditions"
-                value={editedData.conditions || ""}
-                onChange={handleFieldChange}
-              />
-            </label>
-            <label>
-              Injuries:{" "}
-              <input
-                name="injuries"
-                value={editedData.injuries || ""}
-                onChange={handleFieldChange}
-              />
-            </label>
-            <label>
-              Cannabis Use:
-              <select
-                name="cannabisUse"
-                value={editedData.cannabisUse || ""}
-                onChange={handleFieldChange}
-              >
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-            </label>
-            <label>
-              Reason for Visit:{" "}
-              <input
-                name="reason"
-                value={editedData.reason || ""}
-                onChange={handleFieldChange}
-              />
-            </label>
-            <label>
-              Comments:{" "}
-              <textarea
-                name="comments"
-                value={editedData.comments || ""}
-                onChange={handleFieldChange}
-              />
-            </label>
-            <button onClick={handleSaveClick} className="button-save">
-              Save
-            </button>
-            <button
-              onClick={() => setIsEditing(false)}
-              className="button-cancel"
-            >
-              Cancel
-            </button>
-          </div>
-        ) : medicalData ? (
-          <>
+        <section className="profile-section">
+          <h3>Basic Info</h3>
+          {medicalData ? (
             <ul>
               <li>
-                <strong>Height:</strong> {medicalData.height}
+                <strong>Name:</strong> {medicalData.firstName}{" "}
+                {medicalData.lastName}
               </li>
               <li>
-                <strong>Weight:</strong> {medicalData.weight}
+                <strong>DOB:</strong> {medicalData.dob}
               </li>
               <li>
-                <strong>Allergies:</strong> {medicalData.allergies}
-              </li>
-              <li>
-                <strong>Medications:</strong> {medicalData.medications}
-              </li>
-              <li>
-                <strong>Conditions:</strong> {medicalData.conditions}
-              </li>
-              <li>
-                <strong>Injuries:</strong> {medicalData.injuries}
-              </li>
-              <li>
-                <strong>Cannabis Use:</strong> {medicalData.cannabisUse}
-              </li>
-              <li>
-                <strong>Reason for Visit:</strong> {medicalData.reason}
-              </li>
-              <li>
-                <strong>Comments:</strong> {medicalData.comments}
+                <strong>Gender:</strong> {medicalData.gender}
               </li>
             </ul>
-          </>
-        ) : (
-          <p>No medical history submitted.</p>
-        )}
-        {medicalData && (
-          <button
-            className="button"
-            onClick={() => navigate("/history", { state: { editMode: true } })}
-            >
-            Edit Medical History
-          </button>
-        )}
-      </section>
+          ) : (
+            <p>No medical info found.</p>
+          )}
+        </section>
 
-      <section className="profile-section">
-        <h3>Upcoming Appointment</h3>
-        {appointment ? (
-          <ul>
-            <li>
-              <strong>Day:</strong> {appointment.day}
-            </li>
-            <li>
-              <strong>Time:</strong> {appointment.time}
-            </li>
-            <li>
-              <strong>Location:</strong> {appointment.location}
-            </li>
-            <li>
-              <strong>Provider:</strong> {appointment.provider}
-            </li>
-          </ul>
-        ) : (
-          <p>No upcoming appointments.</p>
-        )}
-      </section>
+        <section className="profile-section">
+          <h3>Medical History</h3>
 
-      <section className="profile-section">
-        <h3>Account Settings</h3>
-        
-        <button
-          className="setting-btn"
-          onClick={() => setShowPasswordForm(!showPasswordForm)}
-        >
-          Change Password
-        </button>
-        {showPasswordForm && (
-          <div className="password-form">
-            <input
-              type="password"
-              placeholder="New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-            <button onClick={handlePasswordChange}>Submit</button>
-            <p>{statusMsg}</p>
-          </div>
-        )}
-        <button
-          className="setting-btn"
-          onClick={() => setShowContactForm(!showContactForm)}
-        >
-          Update Contact Info
-        </button>
-        {showContactForm && (
-          <div className="contact-form">
-            <div className="emailPhone">
-              <input
-                type="email"
-                placeholder="New Email (Optional)"
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
-                className="emailPhoneInput"
-              />
-
-              <PhoneInput
-                placeholder="New Phone (Optional)"
-                defaultCountry="US"
-                value={newPhone}
-                onChange={setNewPhone}
-                className="emailPhoneInput"
-              />
+          {isEditing ? (
+            <div className="medical-edit-form">
+              <label>
+                Height:{" "}
+                <input
+                  name="height"
+                  value={editedData.height || ""}
+                  onChange={handleFieldChange}
+                />
+              </label>
+              <label>
+                Weight:{" "}
+                <input
+                  name="weight"
+                  value={editedData.weight || ""}
+                  onChange={handleFieldChange}
+                />
+              </label>
+              <label>
+                Allergies:{" "}
+                <input
+                  name="allergies"
+                  value={editedData.allergies || ""}
+                  onChange={handleFieldChange}
+                />
+              </label>
+              <label>
+                Medications:{" "}
+                <input
+                  name="medications"
+                  value={editedData.medications || ""}
+                  onChange={handleFieldChange}
+                />
+              </label>
+              <label>
+                Conditions:{" "}
+                <input
+                  name="conditions"
+                  value={editedData.conditions || ""}
+                  onChange={handleFieldChange}
+                />
+              </label>
+              <label>
+                Injuries:{" "}
+                <input
+                  name="injuries"
+                  value={editedData.injuries || ""}
+                  onChange={handleFieldChange}
+                />
+              </label>
+              <label>
+                Cannabis Use:
+                <select
+                  name="cannabisUse"
+                  value={editedData.cannabisUse || ""}
+                  onChange={handleFieldChange}
+                >
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </label>
+              <label>
+                Reason for Visit:{" "}
+                <input
+                  name="reason"
+                  value={editedData.reason || ""}
+                  onChange={handleFieldChange}
+                />
+              </label>
+              <label>
+                Comments:{" "}
+                <textarea
+                  name="comments"
+                  value={editedData.comments || ""}
+                  onChange={handleFieldChange}
+                />
+              </label>
+              <button onClick={handleSaveClick} className="button-save">
+                Save
+              </button>
+              <button
+                onClick={() => setIsEditing(false)}
+                className="button-cancel"
+              >
+                Cancel
+              </button>
             </div>
-            <button onClick={handleContactUpdate} className="mButtom">Submit</button>
-          </div>
-        )}{" "}
-        <button className="setting-btn delete" onClick={handleDeleteAccount}>
-          Delete Account
-        </button>
-      </section>
-      <Modal message={alertMessage} onClose={() => setAlertMessage("")} />
+          ) : medicalData ? (
+            <>
+              <ul>
+                <li>
+                  <strong>Height:</strong> {medicalData.height}
+                </li>
+                <li>
+                  <strong>Weight:</strong> {medicalData.weight}
+                </li>
+                <li>
+                  <strong>Allergies:</strong> {medicalData.allergies}
+                </li>
+                <li>
+                  <strong>Medications:</strong> {medicalData.medications}
+                </li>
+                <li>
+                  <strong>Conditions:</strong> {medicalData.conditions}
+                </li>
+                <li>
+                  <strong>Injuries:</strong> {medicalData.injuries}
+                </li>
+                <li>
+                  <strong>Cannabis Use:</strong> {medicalData.cannabisUse}
+                </li>
+                <li>
+                  <strong>Reason for Visit:</strong> {medicalData.reason}
+                </li>
+                <li>
+                  <strong>Comments:</strong> {medicalData.comments}
+                </li>
+              </ul>
+            </>
+          ) : (
+            <p>No medical history submitted.</p>
+          )}
+          {medicalData && (
+            <button
+              className="button"
+              onClick={() => navigate("/history", { state: { editMode: true } })}
+              >
+              Edit Medical History
+            </button>
+          )}
+        </section>
+
+        <section className="profile-section">
+          <h3>Upcoming Appointment</h3>
+          {appointment ? (
+            <ul>
+              <li>
+                <strong>Day:</strong> {appointment.day}
+              </li>
+              <li>
+                <strong>Time:</strong> {appointment.time}
+              </li>
+              <li>
+                <strong>Location:</strong> {appointment.location}
+              </li>
+              <li>
+                <strong>Provider:</strong> {appointment.provider}
+              </li>
+            </ul>
+          ) : (
+            <p>No upcoming appointments.</p>
+          )}
+        </section>
+
+        <section className="profile-section">
+          <h3>Account Settings</h3>
+          
+          <button
+            className="setting-btn"
+            onClick={() => setShowPasswordForm(!showPasswordForm)}
+          >
+            Change Password
+          </button>
+          {showPasswordForm && (
+            <div className="password-form">
+              <input
+                type="password"
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <button onClick={handlePasswordChange}>Submit</button>
+              <p>{statusMsg}</p>
+            </div>
+          )}
+          <button
+            className="setting-btn"
+            onClick={() => setShowContactForm(!showContactForm)}
+          >
+            Update Contact Info
+          </button>
+          {showContactForm && (
+            <div className="contact-form">
+              <div className="emailPhone">
+                <input
+                  type="email"
+                  placeholder="New Email (Optional)"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  className="emailPhoneInput"
+                />
+
+                <PhoneInput
+                  placeholder="New Phone (Optional)"
+                  defaultCountry="US"
+                  value={newPhone}
+                  onChange={setNewPhone}
+                  className="emailPhoneInput"
+                />
+              </div>
+              <button onClick={handleContactUpdate} className="mButtom">Submit</button>
+            </div>
+          )}{" "}
+          <button className="setting-btn delete" onClick={handleDeleteAccount}>
+            Delete Account
+          </button>
+        </section>
+        <Modal message={alertMessage} onClose={() => setAlertMessage("")} />
+      </div>
     </div>
   );
 }
