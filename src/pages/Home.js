@@ -115,7 +115,7 @@ function Home() {
           <div className="section">
             <h3>Reminder:</h3>
             <ul className="feature-list">
-              <li>Fill Out Medical History</li>
+            {!appointment && <li>Fill Out Medical History</li>}
               <li>Pay before appointment</li>
               <li>Arrive 10 minutes early</li>
             </ul>
