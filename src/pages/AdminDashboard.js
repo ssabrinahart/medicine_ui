@@ -31,6 +31,9 @@ function AdminDashboard() {
 
   const [successMessage, setSuccessMessage] = useState("");
 
+  // NEW: toggle state (default ON => show booked)
+  const [showBooked, setShowBooked] = useState(true);
+
   const navigate = useNavigate();
 
   const fetchAppointments = async () => {
@@ -87,10 +90,8 @@ function AdminDashboard() {
           return;
         }
 
-        // ✅ actually call it
         await fetchAppointments();
 
-        // Fetch user count
         const userCountResponse = await fetch(
           "http://localhost:5001/admin/user-count",
           { headers: { Authorization: `Bearer ${token}` } }
@@ -209,6 +210,16 @@ function AdminDashboard() {
     setTimeout(() => setSuccessMessage(""), 2000);
   };
 
+  // Filter by toggle
+  const filteredAppointments = appointments.filter((appt) => {
+    if (showBooked) {
+      // Booked view: real bookings only (and not 'system')
+      return  appt.patient_id !== "system";
+    }
+    // Free view: unbooked OR system placeholders
+    return appt.patient_id === "system";
+  });
+
   if (loading) return <div>Loading admin dashboard...</div>;
 
   return (
@@ -237,32 +248,67 @@ function AdminDashboard() {
         view={currentView}
         onNavigate={(date) => setCurrentDate(date)}
       />
+
       {/* Create availability modal */}
       <button style={styles.createAppointmentButton} onClick={openModal}>
         Create Appointment
       </button>
 
+      {/* Header row with toggle */}
       <div style={{ marginTop: "2rem" }}>
-        <h3>Upcoming Appointments List</h3>
-        {appointments.length === 0 ? (
-          <p>No appointments scheduled.</p>
+        <div style={styles.appointmentsHeader}>
+          <h3 style={{ margin: 0 }}>Upcoming Appointments List</h3>
+
+          {/* Toggle switch + label */}
+          <div style={styles.toggleWrap}>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={showBooked}
+              onClick={() => setShowBooked((v) => !v)}
+              style={{
+                ...styles.switchTrack,
+                backgroundColor: showBooked ? "#4CAF50" : "#bbb",
+              }}
+            >
+              <span
+                style={{
+                  ...styles.switchKnob,
+                  transform: showBooked ? "translateX(22px)" : "translateX(0px)",
+                }}
+              />
+            </button>
+            <span style={styles.toggleLabel}>
+              {showBooked ? "Booked appointments" : "Free appointments"}
+            </span>
+          </div>
+        </div>
+
+        {filteredAppointments.length === 0 ? (
+          <p>No appointments to display.</p>
         ) : (
           <div style={styles.appointmentsList}>
-            {appointments.map((appt) => (
+            {filteredAppointments.map((appt) => (
               <div key={appt.id} style={styles.appointmentCard}>
                 <div>
-                  <strong>Patient ID:</strong> {appt.patient_id}
+                  <strong>Patient ID:</strong> {appt.patient_id ?? "—"}
                 </div>
                 <div>
                   <strong>Time:</strong>{" "}
-                  {moment(appt.start).tz("America/New_York").format("YYYY-MM-DD HH:mm")}
+                  {moment(appt.start)
+                    .tz("America/New_York")
+                    .format("YYYY-MM-DD HH:mm")}
                 </div>
-                <button
-                  style={styles.viewHistoryButton}
-                  onClick={() => handleViewHistory(appt.patient_id)}
-                >
-                  View Medical History
-                </button>
+
+                {/* Only show history button for booked, non-system */}
+                {appt.booked && appt.patient_id && appt.patient_id !== "system" ? (
+                  <button
+                    style={styles.viewHistoryButton}
+                    onClick={() => handleViewHistory(appt.patient_id)}
+                  >
+                    View Medical History
+                  </button>
+                ) : null}
               </div>
             ))}
           </div>
@@ -353,7 +399,7 @@ function AdminDashboard() {
         </div>
       )}
 
-      {/* ✅ Medical History MODAL */}
+      {/* Medical History modal */}
       {selectedPatient && medicalHistory && (
         <div
           style={styles.modalOverlay}
@@ -517,6 +563,48 @@ const styles = {
     backgroundColor: "#4CAF50",
     color: "white",
     whiteSpace: "nowrap",
+  },
+
+  // Row for "Upcoming Appointments List" + toggle
+  appointmentsHeader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "1rem",
+    marginBottom: "0.75rem",
+  },
+
+  // Toggle UI
+  toggleWrap: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+  },
+  switchTrack: {
+    position: "relative",
+    width: "44px",
+    height: "24px",
+    borderRadius: "9999px",
+    border: "none",
+    cursor: "pointer",
+    padding: 0,
+    outline: "none",
+    transition: "background-color 0.2s ease",
+  },
+  switchKnob: {
+    position: "absolute",
+    top: "2px",
+    left: "2px",
+    width: "20px",
+    height: "20px",
+    borderRadius: "50%",
+    background: "#fff",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
+    transition: "transform 0.2s ease",
+  },
+  toggleLabel: {
+    fontSize: "0.95rem",
+    userSelect: "none",
   },
 
   /* Modal base */
