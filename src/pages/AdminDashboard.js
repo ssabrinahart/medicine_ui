@@ -445,10 +445,13 @@ const fetchAppointments = async () => {
 
 const styles = {
   container: {
-    padding: "2rem",
-    maxWidth: "700px",
-    margin: "auto",
-    fontFamily: "Arial, sans-serif",
+    padding: "2rem 1rem",
+    maxWidth: "900px",
+    margin: "0 auto",
+    boxSizing: "border-box",
+    minHeight: "100vh",
+    paddingBottom: "80px", // = footer height (adjust to your footer)
+    overflowX: "hidden",
   },
   header: { textAlign: "center", marginBottom: "1.5rem" },
   cancelButton: {
