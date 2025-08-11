@@ -11,54 +11,59 @@ function AdminDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [userCount, setUserCount] = useState(null);
   const [loading, setLoading] = useState(true);
+
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [medicalHistory, setMedicalHistory] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+
+  const [showModal, setShowModal] = useState(false); // availability form modal
   const [newAppointment, setNewAppointment] = useState({
     patient_id: "",
     date: "",
     startTime: "",
-    duration: 30, // in minutes
+    duration: 30,
   });
+
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState("month");
 
   const [successMessage, setSuccessMessage] = useState("");
 
   const navigate = useNavigate();
-const fetchAppointments = async () => {
-  const token = localStorage.getItem("authToken");
-  if (!token) {
-    navigate("/login");
-    return;
-  }
-  try {
-    const apptResponse = await fetch(
-      "http://localhost:5001/admin/patient-appointments",
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    if (apptResponse.status === 403) {
-      navigate("/unauthorized");
+
+  const fetchAppointments = async () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/login");
       return;
     }
-    if (!apptResponse.ok) throw new Error("Failed to fetch appointments");
-    const apptData = await apptResponse.json();
-    const events = apptData.appointments.map((appt) => ({
-      id: appt.id || `${appt.patient_id}-${appt.date}-${appt.time}`,
-      title: appt.booked ? `Booked` : `Available`,
-      start: new Date(`${appt.date}T${appt.time}`),
-      end: new Date(new Date(`${appt.date}T${appt.time}`).getTime() + 30 * 60000),
-      patient_id: appt.patient_id,
-      booked: appt.booked,
-    }));
+    try {
+      const apptResponse = await fetch(
+        "http://localhost:5001/admin/patient-appointments",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (apptResponse.status === 403) {
+        navigate("/unauthorized");
+        return;
+      }
+      if (!apptResponse.ok) throw new Error("Failed to fetch appointments");
+      const apptData = await apptResponse.json();
+      const events = apptData.appointments.map((appt) => ({
+        id: appt.id || `${appt.patient_id}-${appt.date}-${appt.time}`,
+        title: appt.booked ? `Booked` : `Available`,
+        start: new Date(`${appt.date}T${appt.time}`),
+        end: new Date(new Date(`${appt.date}T${appt.time}`).getTime() + 30 * 60000),
+        patient_id: appt.patient_id,
+        booked: appt.booked,
+      }));
 
-    setAppointments(events);
-  } catch (error) {
-    console.error("Error fetching appointments:", error);
-  }
-};
+      setAppointments(events);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -81,33 +86,9 @@ const fetchAppointments = async () => {
           navigate("/unauthorized");
           return;
         }
-        await fetchAppointments;
 
-        // Fetch appointments
-        const apptResponse = await fetch(
-          "http://localhost:5001/admin/patient-appointments",
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        if (apptResponse.status === 403) {
-          navigate("/unauthorized");
-          return;
-        }
-        if (!apptResponse.ok) throw new Error("Failed to fetch appointments");
-        const apptData = await apptResponse.json();
-
-        console.log("time " + JSON.stringify(apptData.time));
-        const events = apptData.appointments.map((appt) => ({
-          id: appt.id || `${appt.patient_id}-${appt.date}-${appt.time}`,
-          title: appt.booked ? `Booked` : `Available`,
-          start: new Date(`${appt.date}T${appt.time}`),
-          end: new Date(new Date(`${appt.date}T${appt.time}`).getTime() + 30 * 60000),
-          patient_id: appt.patient_id,
-          booked: appt.booked,
-        }));
-
-        console.log("appointments " + JSON.stringify(events));
-        setAppointments(events);
+        // ✅ actually call it
+        await fetchAppointments();
 
         // Fetch user count
         const userCountResponse = await fetch(
@@ -161,7 +142,7 @@ const fetchAppointments = async () => {
     handleViewHistory(event.patient_id);
   };
 
-  // Modal handlers
+  // Availability modal handlers
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
 
@@ -170,23 +151,21 @@ const fetchAppointments = async () => {
     setNewAppointment((prev) => ({ ...prev, [name]: value }));
   };
 
-
   const handleSubmitAvailability = async ({ weekStartDate, availability }) => {
     const token = localStorage.getItem("authToken");
     await fetchAppointments();
     if (!token) {
       navigate("/login");
       return;
-    
     }
-  
+
     const allSlots = [];
-  
+
     for (const day of Object.keys(availability)) {
       const daySlots = availability[day];
       for (const slot of daySlots) {
         if (!slot.start_time || !slot.duration) continue;
-  
+
         const dayIndex = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].indexOf(day);
         if (dayIndex === -1) continue;
 
@@ -198,16 +177,16 @@ const fetchAppointments = async () => {
           .second(0)
           .millisecond(0)
           .toDate();
-        
+
         const endDate = moment(startDate).add(slot.duration, "minutes").toDate();
-        
+
         allSlots.push({
           start_date: startDate.toISOString(),
           end_date: endDate.toISOString(),
         });
       }
     }
-  
+
     for (const slot of allSlots) {
       const response = await fetch("http://localhost:5001/admin/create-appointment-time", {
         method: "POST",
@@ -221,18 +200,15 @@ const fetchAppointments = async () => {
         throw new Error("Failed to create appointment slot");
       }
     }
-  
-    setSuccessMessage("Availability saved successfully");
 
+    setSuccessMessage("Availability saved successfully");
     setShowModal(false);
     setTimeout(() => setSuccessMessage(""), 2000);
 
     await fetchAppointments();
-
     setTimeout(() => setSuccessMessage(""), 2000);
-    
   };
-  
+
   if (loading) return <div>Loading admin dashboard...</div>;
 
   return (
@@ -257,11 +233,11 @@ const fetchAppointments = async () => {
         endAccessor="end"
         style={{ height: 500 }}
         onSelectEvent={handleSelectEvent}
-
-        date={currentDate}                     // controlled current date
-        view={currentView}                     // controlled current view
+        date={currentDate}
+        view={currentView}
         onNavigate={(date) => setCurrentDate(date)}
       />
+
       <div style={{ marginTop: "2rem" }}>
         <h3>Upcoming Appointments List</h3>
         {appointments.length === 0 ? (
@@ -289,6 +265,7 @@ const fetchAppointments = async () => {
         )}
       </div>
 
+      {/* Cancel appointment modal */}
       {showCancelModal && selectedEvent && (
         <div style={styles.modalOverlay}>
           <div style={styles.modal}>
@@ -316,7 +293,6 @@ const fetchAppointments = async () => {
                     if (!response.ok)
                       throw new Error("Failed to cancel appointment");
 
-                    // Remove cancelled appointment from state without reloading everything
                     setAppointments((prev) =>
                       prev.filter((appt) => appt.id !== selectedEvent.id)
                     );
@@ -347,6 +323,7 @@ const fetchAppointments = async () => {
         </div>
       )}
 
+      {/* Create availability modal */}
       <button style={styles.createAppointmentButton} onClick={openModal}>
         Create Appointment
       </button>
@@ -366,77 +343,97 @@ const fetchAppointments = async () => {
         </div>
       )}
 
-      {/* Modal */}
-{showModal && (
-  <div style={styles.modalOverlay}>
-    <div style={styles.modal}>
-      <WeeklyAvailabilityForm
-        onSubmit={handleSubmitAvailability}
-      />
-      <button
-        type="button"
-        onClick={closeModal}
-        style={styles.cancelButton}
-      >
-        Cancel
-      </button>
-    </div>
-  </div>
-)}
+      {showModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <WeeklyAvailabilityForm onSubmit={handleSubmitAvailability} />
+            <button type="button" onClick={closeModal} style={styles.cancelButton}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
+      {/* ✅ Medical History MODAL */}
       {selectedPatient && medicalHistory && (
-        <div style={styles.historyContainer}>
-          <button
-            style={styles.cancelButton}
-            onClick={() => {
-              setSelectedPatient(null);
-              setMedicalHistory(null);
-            }}
-          >
-            Cancel
-          </button>
+        <div
+          style={styles.modalOverlay}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="medical-history-title"
+        >
+          <div style={styles.modalLarge}>
+            <div style={styles.modalHeader}>
+              <h2 id="medical-history-title" style={{ margin: 0 }}>
+                Medical History for {selectedPatient}
+              </h2>
+              <button
+                aria-label="Close"
+                onClick={() => {
+                  setSelectedPatient(null);
+                  setMedicalHistory(null);
+                }}
+                style={styles.modalCloseX}
+              >
+                ×
+              </button>
+            </div>
 
-          <h2>Medical History for {selectedPatient}</h2>
-          {medicalHistory.length === 0 ? (
-            <p>No medical history records found.</p>
-          ) : (
-            medicalHistory.map((record) => (
-              <div key={record.id} style={styles.historyRecord}>
-                <p>
-                  <strong>Name:</strong> {record.first_name} {record.last_name}
-                </p>
-                <p>
-                  <strong>DOB:</strong> {record.birth_date}
-                </p>
-                <p>
-                  <strong>Gender:</strong> {record.gender}
-                </p>
-                <p>
-                  <strong>Allergies:</strong> {record.allergies}
-                </p>
-                <p>
-                  <strong>Medications:</strong> {record.medications}
-                </p>
-                <p>
-                  <strong>Conditions:</strong> {record.conditions}
-                </p>
-                <p>
-                  <strong>Injuries:</strong> {record.injuries}
-                </p>
-                <p>
-                  <strong>Cannabis Use:</strong>{" "}
-                  {record.has_used_cannabis ? "Yes" : "No"}
-                </p>
-                <p>
-                  <strong>Reason for Visit:</strong> {record.reason_for_visit}
-                </p>
-                <p>
-                  <strong>Comments:</strong> {record.additional_comments}
-                </p>
-                <hr />
-              </div>
-            ))
-          )}
+            <div style={styles.modalBody}>
+              {medicalHistory.length === 0 ? (
+                <p>No medical history records found.</p>
+              ) : (
+                medicalHistory.map((record) => (
+                  <div key={record.id} style={styles.historyRecord}>
+                    <p>
+                      <strong>Name:</strong> {record.first_name} {record.last_name}
+                    </p>
+                    <p>
+                      <strong>DOB:</strong> {record.birth_date}
+                    </p>
+                    <p>
+                      <strong>Gender:</strong> {record.gender}
+                    </p>
+                    <p>
+                      <strong>Allergies:</strong> {record.allergies}
+                    </p>
+                    <p>
+                      <strong>Medications:</strong> {record.medications}
+                    </p>
+                    <p>
+                      <strong>Conditions:</strong> {record.conditions}
+                    </p>
+                    <p>
+                      <strong>Injuries:</strong> {record.injuries}
+                    </p>
+                    <p>
+                      <strong>Cannabis Use:</strong>{" "}
+                      {record.has_used_cannabis ? "Yes" : "No"}
+                    </p>
+                    <p>
+                      <strong>Reason for Visit:</strong> {record.reason_for_visit}
+                    </p>
+                    <p>
+                      <strong>Comments:</strong> {record.additional_comments}
+                    </p>
+                    <hr />
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div style={styles.modalButtons}>
+              <button
+                style={styles.submitButton}
+                onClick={() => {
+                  setSelectedPatient(null);
+                  setMedicalHistory(null);
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -450,7 +447,7 @@ const styles = {
     margin: "0 auto",
     boxSizing: "border-box",
     minHeight: "100vh",
-    paddingBottom: "80px", // = footer height (adjust to your footer)
+    paddingBottom: "80px",
     overflowX: "hidden",
   },
   header: { textAlign: "center", marginBottom: "1.5rem" },
@@ -501,7 +498,6 @@ const styles = {
     flexDirection: "column",
     gap: "1rem",
   },
-
   appointmentCard: {
     padding: "1rem",
     borderRadius: "8px",
@@ -513,7 +509,6 @@ const styles = {
     gap: "1rem",
     flexWrap: "wrap",
   },
-
   viewHistoryButton: {
     padding: "0.4rem 0.8rem",
     fontSize: "0.9rem",
@@ -525,7 +520,7 @@ const styles = {
     whiteSpace: "nowrap",
   },
 
-  /* Modal styles */
+  /* Modal base */
   modalOverlay: {
     position: "fixed",
     top: 0,
@@ -537,6 +532,8 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1000,
+    padding: "1rem",
+    boxSizing: "border-box",
   },
   modal: {
     backgroundColor: "white",
@@ -544,7 +541,43 @@ const styles = {
     borderRadius: "10px",
     width: "400px",
     boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+    maxHeight: "90vh",
+    overflowY: "auto",
   },
+
+  /* Larger modal for medical history */
+  modalLarge: {
+    backgroundColor: "white",
+    borderRadius: "10px",
+    width: "min(800px, 95vw)",
+    maxHeight: "90vh",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+    display: "flex",
+    flexDirection: "column",
+    padding: "1rem 1rem 0.75rem",
+  },
+  modalHeader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "0.5rem 0.25rem 0.75rem",
+    borderBottom: "1px solid #eee",
+  },
+  modalCloseX: {
+    appearance: "none",
+    background: "transparent",
+    border: "none",
+    fontSize: "1.75rem",
+    lineHeight: 1,
+    cursor: "pointer",
+    padding: 0,
+    margin: 0,
+  },
+  modalBody: {
+    overflowY: "auto",
+    padding: "1rem 0.25rem",
+  },
+
   form: {
     display: "flex",
     flexDirection: "column",
@@ -559,8 +592,11 @@ const styles = {
   },
   modalButtons: {
     display: "flex",
-    justifyContent: "space-between",
-    marginTop: "1rem",
+    justifyContent: "flex-end",
+    gap: "0.75rem",
+    marginTop: "0.5rem",
+    padding: "0.75rem 0.25rem 1rem",
+    borderTop: "1px solid #eee",
   },
   submitButton: {
     backgroundColor: "#4CAF50",
