@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
-import moment from "moment";
+import moment from "moment-timezone";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./Scheduling.css";
 import { loadStripe } from "@stripe/stripe-js";
@@ -36,12 +36,12 @@ function Scheduling() {
         const data = await response.json();
 
         const events = data.appointments.map((appt) => {
-          const startDateTime = new Date(`${appt.date}T${appt.time}`);
-          const endDateTime = new Date(startDateTime.getTime() + 30 * 60000); // 30 min slots
-
+          const startDateTime = moment.tz(`${appt.date}T${appt.time}`, "America/New_York").toDate();
+          const endDateTime = moment(startDateTime).add(30, "minutes").toDate();
+        
           return {
             id: `${appt.date}-${appt.time}`,
-            title: appt.patient_id !== "system" ? "BOOKED" : `Book`,
+            title: appt.patient_id !== "system" ? "BOOKED" : `Available`,
             start: startDateTime,
             end: endDateTime,
             allDay: false,
@@ -71,8 +71,8 @@ function Scheduling() {
       return;
     }
     setSelectedSlot({
-      day: moment(slotInfo.start).format("YYYY-MM-DD"),
-      time: moment(slotInfo.start).format("HH:mm"),
+      day: moment(slotInfo.start).tz("America/New_York").format("YYYY-MM-DD"),
+      time: moment(slotInfo.start).tz("America/New_York").format("HH:mm"),
       start: slotInfo.start,
       end: slotInfo.end,
     });
@@ -204,16 +204,16 @@ function Scheduling() {
         onSelectEvent={(event) => {
           console.log("event selected", event);
           setSelectedSlot({
-            day: moment(event.start).format("YYYY-MM-DD"),
-            time: moment(event.start).format("HH:mm"),
+            day: moment(event.start).tz("America/New_York").format("YYYY-MM-DD"),
+            time: moment(event.start).tz("America/New_York").format("HH:mm"),
             start: event.start,
             end: event.end,
           });
         }}
         startAccessor="start"
         endAccessor="end"
-        min={new Date(1970, 1, 1, 8, 0)}
-        max={new Date(1970, 1, 1, 22, 0)}
+        min={moment.tz("1970-02-01 08:00", "America/New_York").toDate()}
+        max={moment.tz("1970-02-01 22:00", "America/New_York").toDate()}
         style={{ height: 500, margin: "20px 0" }}
       />
 
