@@ -190,72 +190,74 @@ function Scheduling() {
   if (loading) return <div>Loading available appointments...</div>;
 
   return (
-    <div className="scheduling-container">
-      <h2>Schedule Your Consultation</h2>
-      <Calendar
-        localizer={localizer}
-        events={appointments}
-        defaultView="month"
-        defaultDate={new Date()}
-        views={["month", "week", "day"]}
-        step={30}
-        selectable
-        onSelectSlot={handleSelectSlot}
-        onSelectEvent={(event) => {
-          console.log("event selected", event);
-          setSelectedSlot({
-            day: moment(event.start).tz("America/New_York").format("YYYY-MM-DD"),
-            time: moment(event.start).tz("America/New_York").format("HH:mm"),
-            start: event.start,
-            end: event.end,
-          });
-        }}
-        startAccessor="start"
-        endAccessor="end"
-        min={moment.tz("1970-02-01 08:00", "America/New_York").toDate()}
-        max={moment.tz("1970-02-01 22:00", "America/New_York").toDate()}
-        style={{ height: 500, margin: "20px 0" }}
-      />
+    <div className="schedPage">
+      <div className="scheduling-container">
+        <h2>Schedule Your Consultation</h2>
+        <Calendar
+          localizer={localizer}
+          events={appointments}
+          defaultView="month"
+          defaultDate={new Date()}
+          views={["month", "week", "day"]}
+          step={30}
+          selectable
+          onSelectSlot={handleSelectSlot}
+          onSelectEvent={(event) => {
+            console.log("event selected", event);
+            setSelectedSlot({
+              day: moment(event.start).tz("America/New_York").format("YYYY-MM-DD"),
+              time: moment(event.start).tz("America/New_York").format("HH:mm"),
+              start: event.start,
+              end: event.end,
+            });
+          }}
+          startAccessor="start"
+          endAccessor="end"
+          min={moment.tz("1970-02-01 08:00", "America/New_York").toDate()}
+          max={moment.tz("1970-02-01 22:00", "America/New_York").toDate()}
+          style={{ height: 500, margin: "20px 0" }}
+        />
 
-      {selectedSlot && (
-        <div>
-          <p className="selected-slot">
-            🗓️ Selected Slot: <br />
-            <strong>
-              {selectedSlot.day} at {selectedSlot.time}
-            </strong>
-          </p>
-          <div style={{ display: "flex", gap: "10px" }}>
-            <button onClick={openConfirmModal}>Book & Pay</button>
-            <button onClick={() => setSelectedSlot(null)}>Cancel</button>
-          </div>
-        </div>
-      )}
-
-      {/* Confirmation Modal */}
-      {showModal && (
-        <div style={modalBackdrop}>
-          <div style={modalBox}>
-            <h3>Payment required</h3>
-            <p>
-              You must pay to confirm this booking. Click{" "}
-              <strong>Confirm &amp; Pay</strong> to proceed to Stripe, or{" "}
-              <strong>Cancel</strong> to choose another slot.
+        {selectedSlot && (
+          <div>
+            <p className="selected-slot">
+              🗓️ Selected Slot: <br />
+              <strong>
+                {selectedSlot.day} at {selectedSlot.time}
+              </strong>
             </p>
-
-            <div
-              style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}
-            >
-              <button onClick={closeModal} disabled={modalLoading}>
-                Cancel
-              </button>
-              <button onClick={confirmAndStartPayment} disabled={modalLoading}>
-                {modalLoading ? "Redirecting..." : "Confirm & Pay"}
-              </button>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button onClick={openConfirmModal}>Book & Pay</button>
+              <button onClick={() => setSelectedSlot(null)}>Cancel</button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Confirmation Modal */}
+        {showModal && (
+          <div style={modalBackdrop}>
+            <div style={modalBox}>
+              <h3>Payment required</h3>
+              <p>
+                You must pay to confirm this booking. Click{" "}
+                <strong>Confirm &amp; Pay</strong> to proceed to Stripe, or{" "}
+                <strong>Cancel</strong> to choose another slot.
+              </p>
+
+              <div
+                style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}
+              >
+                <button onClick={closeModal} disabled={modalLoading}>
+                  Cancel
+                </button>
+                <button onClick={confirmAndStartPayment} disabled={modalLoading}>
+                  {modalLoading ? "Redirecting..." : "Confirm & Pay"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
