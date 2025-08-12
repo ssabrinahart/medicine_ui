@@ -37,6 +37,20 @@ function Register() {
     navigate("/login");
   };
 
+
+  const validateEmail = email => {
+    if (!email) return true // allow empty if optional
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  const validatePhone = phone => {
+    if (!phone) return true // allow empty if optional
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/ // basic E.164 international format
+    return phoneRegex.test(phone)
+  }
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -44,6 +58,18 @@ function Register() {
 
     if (!validatePassword(password)) {
       setError("Password Invalid");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError("Invalid email format");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!validatePhone(phonenumber)) {
+      setError("Invalid phone number format");
       setIsLoading(false);
       return;
     }

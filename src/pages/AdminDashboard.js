@@ -282,6 +282,7 @@ function AdminDashboard() {
         min={moment.tz("1970-02-01 08:00", "America/New_York").toDate()}
         max={moment.tz("1970-02-01 22:00", "America/New_York").toDate()}
         style={{ height: 500, margin: "20px 0" }}
+        onSelectEvent={handleSelectEvent} 
       />
 
       {/* Create availability modal */}
