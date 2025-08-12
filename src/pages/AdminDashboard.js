@@ -245,6 +245,8 @@ function AdminDashboard () {
     })
   }, [filteredAppointments])
 
+
+
   if (loading) return <div>Loading admin dashboard...</div>
 
   return (
@@ -265,13 +267,20 @@ function AdminDashboard () {
       <Calendar
         localizer={localizer}
         events={appointments}
-        startAccessor='start'
-        endAccessor='end'
-        style={{ height: 500 }}
-        onSelectEvent={handleSelectEvent}
-        defaultView='month'
+        view={currentView}                 
+        date={currentDate}                    
+        onNavigate={(date) => setCurrentDate(date)} 
+        onView={(view) => setCurrentView(view)}  
+        defaultView="month"
         defaultDate={new Date()}
-        views={['month', 'week', 'day']}
+        views={["month", "week", "day"]}
+        step={30}
+        selectable
+        startAccessor="start"
+        endAccessor="end"
+        min={moment.tz("1970-02-01 08:00", "America/New_York").toDate()}
+        max={moment.tz("1970-02-01 22:00", "America/New_York").toDate()}
+        style={{ height: 500, margin: "20px 0" }}
       />
 
       {/* Create availability modal */}
