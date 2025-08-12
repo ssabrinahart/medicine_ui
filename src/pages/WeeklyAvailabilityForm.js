@@ -6,7 +6,6 @@ function WeeklyAvailabilityForm({ onSubmit }) {
 
   const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
-  // Add a new slot for the selected day
   const handleAddSlot = (day) => {
     const newSlot = { start_time: "", duration: 60 };
     setAvailability((prev) => ({
@@ -15,28 +14,24 @@ function WeeklyAvailabilityForm({ onSubmit }) {
     }));
   };
 
-  // Update the slot field value (start_time or duration)
   const handleSlotChange = (day, index, field, value) => {
     setAvailability((prev) => {
       const slots = [...(prev[day] || [])];
-      // For duration ensure it's a number, but allow empty string for clearing input
-      const updatedValue = field === "duration" ? (value === "" ? "" : Number(value)) : value;
+      const updatedValue =
+        field === "duration" ? (value === "" ? "" : Number(value)) : value;
       slots[index] = { ...slots[index], [field]: updatedValue };
       return { ...prev, [day]: slots };
     });
   };
 
-  // Handle form submission: call parent onSubmit with current data
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validate weekStartDate is set
     if (!weekStartDate) {
       alert("Please select the week start date (Monday).");
       return;
     }
 
-    // Optionally: Validate slots have start_time filled
     for (const day of weekdays) {
       const slots = availability[day] || [];
       for (const slot of slots) {
@@ -63,7 +58,10 @@ function WeeklyAvailabilityForm({ onSubmit }) {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Week start date */}
         <div>
-          <label className="block text-gray-700 font-medium mb-2" htmlFor="weekStartDate">
+          <label
+            className="block text-gray-700 font-medium mb-2"
+            htmlFor="weekStartDate"
+          >
             Week Start Date (Monday)
           </label>
           <input
@@ -125,7 +123,17 @@ function WeeklyAvailabilityForm({ onSubmit }) {
         {/* Submit button */}
         <button
           type="submit"
-          className="w-full bg-green-500 text-white py-3 rounded-lg text-lg font-medium hover:bg-green-600"
+          className="bg-green-500 text-white rounded-md"
+          style={{
+            padding: "0.5rem 1rem",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            marginBottom: "1rem",
+            fontWeight: "bold",
+            fontSize: "1rem",
+            minWidth: "fit-content",
+          }}
         >
           Save Availability
         </button>
