@@ -13,7 +13,9 @@ const stripePromise = loadStripe(
 function Scheduling() {
   const [appointments, setAppointments] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);  
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentView, setCurrentView] = useState("month"); 
 
   // modal state
   const [showModal, setShowModal] = useState(false);
@@ -196,6 +198,10 @@ function Scheduling() {
         <Calendar
           localizer={localizer}
           events={appointments}
+          view={currentView}                 
+          date={currentDate}                    
+          onNavigate={(date) => setCurrentDate(date)} 
+          onView={(view) => setCurrentView(view)}  
           defaultView="month"
           defaultDate={new Date()}
           views={["month", "week", "day"]}

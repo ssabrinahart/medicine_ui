@@ -269,9 +269,9 @@ function AdminDashboard () {
         endAccessor='end'
         style={{ height: 500 }}
         onSelectEvent={handleSelectEvent}
-        date={currentDate}
-        view={currentView}
-        onNavigate={date => setCurrentDate(date)}
+        defaultView='month'
+        defaultDate={new Date()}
+        views={['month', 'week', 'day']}
       />
 
       {/* Create availability modal */}
