@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../components/Modal"; // make sure path is correct
 import "./Home.css";
+import { useNavigate } from "react-router-dom";
+
 
 function Home() {
   const [appointment, setAppointment] = useState(null);
   const [modalMessage, setModalMessage] = useState("");
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const username = localStorage.getItem("username");
@@ -93,12 +96,6 @@ function Home() {
 
                 <div className="action-buttons">
                   <button
-                    className="edit-btn"
-                    onClick={() => (window.location.href = "/edit-appointment")}
-                  >
-                    Edit
-                  </button>
-                  <button
                     className="cancel-btn"
                     onClick={() => setShowConfirmCancel(true)}
                   >
@@ -126,10 +123,13 @@ function Home() {
       {/* Confirmation Modal */}
       {showConfirmCancel && (
         <Modal
-          message="Are you sure you want to cancel your appointment?"
+          message="Are you sure you want to cancel your appointment? You will not be refunded."
           onClose={() => setShowConfirmCancel(false)}
         >
-          <button className="confirm-btn" onClick={handleCancelAppointment}>
+          <button className="goback-btn" onClick={() => setShowConfirmCancel(false)}>
+            No, Go Back
+          </button>
+          <button className="cancel-btn" onClick={handleCancelAppointment}>
             Yes, Cancel
           </button>
         </Modal>

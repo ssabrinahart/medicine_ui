@@ -90,6 +90,7 @@
   margin-bottom: 2rem;
 }
 
+.goback-btn,
 .edit-btn,
 .cancel-btn,
 .confirm-btn {
@@ -99,6 +100,10 @@
   cursor: pointer;
   font-size: 1rem;
   transition: background 0.2s ease;
+}
+
+.goback-btn {
+  margin-right: 1.75rem; /* more padding for the back button */
 }
 
 /* Specific button colors */
