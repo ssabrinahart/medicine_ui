@@ -515,6 +515,12 @@ function AdminDashboard() {
                       <strong>Gender:</strong> {record.gender}
                     </p>
                     <p>
+                      <strong>Weight</strong> {record.weight} lbs
+                    </p>
+                    <p>
+                      <strong>Height:</strong> {record.height}
+                    </p>
+                    <p>
                       <strong>Allergies:</strong> {record.allergies}
                     </p>
                     <p>
