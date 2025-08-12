@@ -210,15 +210,30 @@ function AdminDashboard() {
     setTimeout(() => setSuccessMessage(""), 2000);
   };
 
-  // Filter by toggle
-  const filteredAppointments = appointments.filter((appt) => {
-    if (showBooked) {
-      // Booked view: real bookings only (and not 'system')
-      return  appt.patient_id !== "system";
-    }
-    // Free view: unbooked OR system placeholders
-    return appt.patient_id === "system";
-  });
+  // Booked view: true bookings and not 'system'
+  // Free view: unbooked OR 'system'
+  const filteredAppointments = appointments.filter((appt) =>
+  showBooked
+    ? (appt.booked === true && appt.patient_id !== "system")
+    : (!appt.booked || appt.patient_id === "system")
+  );
+
+  // Build a stable composite key for each appt (patient + local time to minute)
+const makeListKey = (a) =>
+`${a.patient_id || "unknown"}-${moment(a.start).tz("America/New_York").format("YYYY-MM-DD-HH:mm")}`;
+
+// Deduplicate by that key
+const dedupedAppointments = React.useMemo(() => {
+const seen = new Set();
+return filteredAppointments.filter((a) => {
+  const k = makeListKey(a);
+  if (seen.has(k)) return false;
+  seen.add(k);
+  return true;
+});
+}, [filteredAppointments]);
+
+
 
   if (loading) return <div>Loading admin dashboard...</div>;
 
@@ -288,30 +303,31 @@ function AdminDashboard() {
           <p>No appointments to display.</p>
         ) : (
           <div style={styles.appointmentsList}>
-            {filteredAppointments.map((appt) => (
-              <div key={appt.id} style={styles.appointmentCard}>
-                <div>
-                  <strong>Patient ID:</strong> {appt.patient_id ?? "—"}
-                </div>
-                <div>
-                  <strong>Time:</strong>{" "}
-                  {moment(appt.start)
-                    .tz("America/New_York")
-                    .format("YYYY-MM-DD HH:mm")}
-                </div>
+            {dedupedAppointments.map((appt) => {
+              const listKey = makeListKey(appt);
+              return (
+                <div key={listKey} style={styles.appointmentCard}>
+                  <div>
+                    <strong>Patient ID:</strong> {appt.patient_id ?? "—"}
+                  </div>
+                  <div>
+                    <strong>Time:</strong>{" "}
+                    {moment(appt.start).tz("America/New_York").format("YYYY-MM-DD HH:mm")}
+                  </div>
 
-                {/* Only show history button for booked, non-system */}
-                {appt.booked && appt.patient_id && appt.patient_id !== "system" ? (
-                  <button
-                    style={styles.viewHistoryButton}
-                    onClick={() => handleViewHistory(appt.patient_id)}
-                  >
-                    View Medical History
-                  </button>
-                ) : null}
-              </div>
-            ))}
-          </div>
+                  {appt.booked && appt.patient_id && appt.patient_id !== "system" ? (
+                    <button
+                      style={styles.viewHistoryButton}
+                      onClick={() => handleViewHistory(appt.patient_id)}
+                    >
+                      View Medical History
+                    </button>
+                  ) : null}
+            </div>
+    );
+  })}
+</div>
+
         )}
       </div>
 
@@ -461,7 +477,6 @@ function AdminDashboard() {
                     <p>
                       <strong>Comments:</strong> {record.additional_comments}
                     </p>
-                    <hr />
                   </div>
                 ))
               )}
