@@ -770,6 +770,7 @@ const styles = {
   form: {
     display: "flex",
     flexDirection: "column",
+    gap: "1rem",
   },
   input: {
     width: "100%",
