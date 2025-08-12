@@ -147,7 +147,7 @@ function Scheduling() {
       day: selectedSlot.day,
       time: selectedSlot.time,
       location: "Virtual",
-      provider: "Admin",
+      provider: "Dr. Smith",
       username: localStorage.getItem("username"),
     };
 
