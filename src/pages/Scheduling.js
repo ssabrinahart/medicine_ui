@@ -51,7 +51,8 @@ function Scheduling() {
           };
         });
         console.log("events " + JSON.stringify(events));
-        setAppointments(events);
+        const availableOnly = events.filter(e => !e.booked);
+        setAppointments(availableOnly);
       } catch (error) {
         console.error("Error fetching appointments", error);
       } finally {
