@@ -765,7 +765,6 @@ const styles = {
   modalBody: {
     overflowY: "auto",
     padding: "1rem 0.25rem",
-    height: "500px",
   },
 
   form: {
