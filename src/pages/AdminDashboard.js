@@ -730,8 +730,8 @@ const styles = {
     borderRadius: "10px",
     width: "400px",
     boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-    maxHeight: "90vh",
     overflowY: "auto",
+    height: "500px",
   },
 
   /* Larger modal for medical history */
@@ -739,7 +739,7 @@ const styles = {
     backgroundColor: "white",
     borderRadius: "10px",
     width: "min(800px, 95vw)",
-    maxHeight: "90vh",
+    height: "500px",
     boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
     display: "flex",
     flexDirection: "column",
@@ -765,12 +765,12 @@ const styles = {
   modalBody: {
     overflowY: "auto",
     padding: "1rem 0.25rem",
+    height: "500px",
   },
 
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "1rem",
   },
   input: {
     width: "100%",
