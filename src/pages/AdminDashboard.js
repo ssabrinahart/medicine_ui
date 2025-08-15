@@ -257,7 +257,7 @@ function AdminDashboard() {
       {userCount !== null && (
         <div style={styles.userCountCard}>
           <h2>Registered Users</h2>
-          <p style={styles.userCountNumber}>{userCount}</p>
+          <p style={styles.userCountNumber}>{userCount - 2}</p>
         </div>
       )}
 
